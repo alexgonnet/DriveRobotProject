@@ -9,10 +9,10 @@
 
     <ImageButton
         android:id="@+id/imageButtonDown"
-        android:layout_width="125dp"
-        android:layout_height="125dp"
-        android:layout_marginStart="141dp"
-        android:layout_marginLeft="141dp"
+        android:layout_width="100dp"
+        android:layout_height="98dp"
+        android:layout_marginStart="112dp"
+        android:layout_marginLeft="112dp"
         android:layout_marginTop="2dp"
         android:layout_marginBottom="18dp"
         android:adjustViewBounds="false"
@@ -22,12 +22,13 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageButtonRight"
+        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/down" />
 
     <ImageButton
         android:id="@+id/imageButtonUp"
-        android:layout_width="125dp"
-        android:layout_height="120dp"
+        android:layout_width="96dp"
+        android:layout_height="92dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="124dp"
         android:background="#000000"
@@ -38,12 +39,13 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/imageButtonDown"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.2"
         app:srcCompat="@drawable/up" />
 
     <ImageButton
         android:id="@+id/imageButtonLeft"
-        android:layout_width="125dp"
-        android:layout_height="125dp"
+        android:layout_width="98dp"
+        android:layout_height="103dp"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="140dp"
@@ -57,23 +59,23 @@
 
     <ImageButton
         android:id="@+id/imageButtonRight"
-        android:layout_width="125dp"
-        android:layout_height="125dp"
-        android:layout_marginStart="125dp"
-        android:layout_marginLeft="125dp"
+        android:layout_width="99dp"
+        android:layout_height="101dp"
+        android:layout_marginStart="92dp"
+        android:layout_marginLeft="92dp"
         android:background="#000000"
         android:onClick="onButtonRightClicked"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="@+id/imageButtonLeft"
         app:layout_constraintStart_toEndOf="@+id/imageButtonLeft"
         app:layout_constraintTop_toTopOf="@+id/imageButtonLeft"
-        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/right" />
 
     <ImageButton
         android:id="@+id/imageButtonStart"
-        android:layout_width="225dp"
-        android:layout_height="194dp"
+        android:layout_width="123dp"
+        android:layout_height="129dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="14dp"
