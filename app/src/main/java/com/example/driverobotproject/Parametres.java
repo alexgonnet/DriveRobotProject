@@ -23,6 +23,7 @@ public class Parametres extends AppCompatActivity {
 
     private Bluetooth bluetooth;
     private Switch enableBT;
+    private LinearLayout l;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,17 +31,27 @@ public class Parametres extends AppCompatActivity {
         setContentView(R.layout.activity_parametres);
         bluetooth = Singleton.getInstance().bluetooth;
         enableBT = findViewById(R.id.switchBluetooth);
-        enableBT.setChecked(bluetooth.bluetoothIsActive());
-        displayDevices();
+        l = findViewById(R.id.linearLayoutDevices);
+        if(bluetooth.bluetoothIsAvailable() != null) {
+            enableBT.setChecked(bluetooth.bluetoothIsActive());
+            displayDevices();
+        }else {
+            enableBT.setEnabled(false);
+        }
     }
 
     public void switchBluetooth(View view){
         bluetooth.bluetoothEnable(enableBT.isChecked());
+        if(enableBT.isChecked()){
+            displayDevices();
+            //Refresh the screen
+        }else {
+            removeDevices();
+        }
     }
 
     private void displayDevices(){
-        if(Singleton.getInstance().bluetooth.bluetoothIsActive()) {
-            LinearLayout l = findViewById(R.id.linearLayoutDevices);
+        if(bluetooth.bluetoothIsAvailable() != null) {
             final ArrayList<BluetoothDeviceCaracteristics> devices = Singleton.getInstance().bluetooth.bluetoothListDevices();
             //Display all the devices
             for (int i = 0; i < devices.size(); i++) {
@@ -59,5 +70,9 @@ public class Parametres extends AppCompatActivity {
             }
             l.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void removeDevices(){
+        l.removeAllViews();
     }
 }
