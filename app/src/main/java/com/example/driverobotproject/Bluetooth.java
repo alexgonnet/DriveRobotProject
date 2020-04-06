@@ -29,7 +29,6 @@ import java.util.UUID;
 public class Bluetooth {
 
     private BluetoothAdapter bA;
-   // private TextView tV;
     private BroadcastReceiver bR;
     private Context context;
     private AppCompatActivity aCA;
@@ -131,6 +130,10 @@ public class Bluetooth {
      */
     public boolean bluetoothIsActive(){
         return bA.isEnabled();
+    }
+
+    public BluetoothAdapter bluetoothIsAvailable(){
+        return bA;
     }
 
 /*
