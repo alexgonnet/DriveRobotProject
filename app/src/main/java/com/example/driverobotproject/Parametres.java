@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -51,14 +52,9 @@ public class Parametres extends AppCompatActivity {
     }
 
     private void displayDevices(){
-<<<<<<< HEAD
-        if(bluetooth.bluetoothIsActive()) {
-            ScrollView l = findViewById(R.id.scrollViewDevices);
-        final ArrayList<BluetoothDeviceCaracteristics> devices = Singleton.getInstance().bluetooth.bluetoothListDevices();
-=======
+
         if(bluetooth.bluetoothIsAvailable() != null) {
             final ArrayList<BluetoothDeviceCaracteristics> devices = Singleton.getInstance().bluetooth.bluetoothListDevices();
->>>>>>> 9ca8d1bd05e052a4f21a016cdb6926c8aa85951a
             //Display all the devices
             for (int i = 0; i < devices.size(); i++) {
                 TextView tV = new TextView(this);
