@@ -39,23 +39,25 @@ public class Parametres extends AppCompatActivity {
     }
 
     private void displayDevices(){
-        LinearLayout l = findViewById(R.id.linearLayoutDevices);
-        final ArrayList<BluetoothDeviceCaracteristics> devices = Singleton.getInstance().bluetooth.bluetoothListDevices();
-        //Display all the devices
-        for(int i = 0; i<devices.size(); i++){
-            TextView tV = new TextView(this);
-            tV.setText(devices.get(i).getName());
-            tV.setId(i);
-            tV.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //connection
-                    Toast.makeText(getApplicationContext(),"Address = "+devices.get(v.getId()).getAddress(),Toast.LENGTH_LONG).show();
-                }
-            });
+        if(Singleton.getInstance().bluetooth.bluetoothIsActive()) {
+            LinearLayout l = findViewById(R.id.linearLayoutDevices);
+            final ArrayList<BluetoothDeviceCaracteristics> devices = Singleton.getInstance().bluetooth.bluetoothListDevices();
+            //Display all the devices
+            for (int i = 0; i < devices.size(); i++) {
+                TextView tV = new TextView(this);
+                tV.setText(devices.get(i).getName());
+                tV.setId(i);
+                tV.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //connection
+                        Toast.makeText(getApplicationContext(), "Address = " + devices.get(v.getId()).getAddress(), Toast.LENGTH_LONG).show();
+                    }
+                });
 
-            l.addView(tV);
+                l.addView(tV);
+            }
+            l.setVisibility(View.VISIBLE);
         }
-        l.setVisibility(View.VISIBLE);
     }
 }
