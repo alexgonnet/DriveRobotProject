@@ -11,9 +11,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements BluetoothCallback {
 
@@ -22,6 +25,18 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ConnectivityManager commuMan = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = commuMan.getActiveNetworkInfo();
+        if(networkInfo == null)
+        {
+            Toast.makeText(MainActivity.this,
+                    "The device is not connected",
+                    Toast.LENGTH_LONG).show();
+        }
+
+        bluetooth = new Bluetooth(getApplicationContext(), this);
+        Singleton.getInstance().bluetooth = bluetooth;
         Singleton.getInstance().bluetooth = new Bluetooth(getApplicationContext(), this);
        // Singleton.getInstance().lumSensor = new LumSensor();
     }
