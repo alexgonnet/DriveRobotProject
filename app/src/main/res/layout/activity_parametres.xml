@@ -23,6 +23,7 @@
         android:id="@+id/checkBoxLuminosite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="switchLumAuto"
         android:text="Luminosité automatique"
         app:layout_constraintStart_toStartOf="@+id/seekBar"
         app:layout_constraintTop_toBottomOf="@+id/seekBar" />
@@ -118,19 +119,20 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/textViewAppareils"
+            android:id="@+id/textViewConnectedDevices"
             android:layout_width="136dp"
             android:layout_height="match_parent"
             android:gravity="center"
+            android:onClick="paramConnectedDevices"
             android:text="Appareils\n connectés"
             android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/textViewPairDevice"
             android:layout_width="135dp"
             android:layout_height="match_parent"
-            android:background="#AEAEAE"
             android:gravity="center"
+            android:onClick="paramPairDevice"
             android:text="Appareillage"
             android:textSize="18sp" />
     </LinearLayout>

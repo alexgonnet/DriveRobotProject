@@ -1,5 +1,7 @@
 package com.example.driverobotproject;
 
+import java.util.UUID;
+
 /**
  * Class to define a bluetooth device
  * @author Benjamin BOURG
@@ -10,10 +12,12 @@ package com.example.driverobotproject;
 public class BluetoothDeviceCaracteristics {
     private String name;
     private String address;
+    private UUID uuid;
 
-    public BluetoothDeviceCaracteristics (String name, String address){
+    public BluetoothDeviceCaracteristics (String name, String address, UUID uuid){
         this.name = name;
         this.address = address;
+        this.uuid = uuid;
     }
 
     /**
@@ -31,4 +35,10 @@ public class BluetoothDeviceCaracteristics {
     public String getAddress(){
         return address;
     }
+
+    /**
+     * Get the UUID of the device
+     * @return uuid the UUID
+     */
+    public UUID getUuid(){ return uuid;}
 }

@@ -1,5 +1,9 @@
 package com.example.driverobotproject;
 
+import android.bluetooth.BluetoothDevice;
+
+import java.util.ArrayList;
+
 /**
  *
  * @author Benjamin BOURG
@@ -16,4 +20,6 @@ public class Singleton {
         return instance;
     }
     Bluetooth bluetooth;
+    LumSensor lumSensor;
+    ArrayList<BluetoothDevice> devices;//ArrayList<BluetoothDeviceCaracteristics> devices;
 }

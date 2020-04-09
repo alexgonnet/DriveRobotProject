@@ -18,9 +18,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BluetoothCallback {
 
-    private Bluetooth bluetooth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +37,11 @@ public class MainActivity extends AppCompatActivity {
 
         bluetooth = new Bluetooth(getApplicationContext(), this);
         Singleton.getInstance().bluetooth = bluetooth;
+        Singleton.getInstance().bluetooth = new Bluetooth(getApplicationContext(), this);
+       // Singleton.getInstance().lumSensor = new LumSensor();
     }
 
-    public void  onButtonAProposClicked(View v)
-    {
+    public void onButtonAProposClicked(View v) {
         Log.i("Bouton", "A propos");
         Intent intent = new Intent(
                 MainActivity.this,
@@ -50,8 +50,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void onButtonParametresClicked(View v)
-    {
+    public void onButtonParametresClicked(View v) {
         Log.i("Bouton", "Parametres");
         Intent intent = new Intent(
                 MainActivity.this,
@@ -60,28 +59,38 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void onButtonStartClicked(View v)
-    {
+    public void onButtonStartClicked(View v) {
         Log.i("Mouvement", "Start");
     }
 
-    public void onButtonUpClicked(View v)
-    {
+    public void onButtonUpClicked(View v) {
         Log.i("Direction", "Up");
     }
 
-    public void onButtonDownClicked(View v)
-    {
+    public void onButtonDownClicked(View v) {
         Log.i("Direction", "Down");
     }
 
-    public void onButtonLeftClicked(View v)
-    {
+    public void onButtonLeftClicked(View v) {
         Log.i("Direction", "Left");
     }
 
-    public void onButtonRightClicked(View v)
-    {
+    public void onButtonRightClicked(View v) {
         Log.i("Direction", "Right");
+    }
+
+    @Override
+    public void onBluetoothConnection(int returnCode) {
+
+    }
+
+    @Override
+    public void onBluetoothDiscovery(int returnCode) {
+
+    }
+
+    @Override
+    public void onReceiveData(String data) {
+
     }
 }
