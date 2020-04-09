@@ -75,11 +75,12 @@ public class Bluetooth{
      * List all the connected BT devices
      * @return devices a list of BT devices
      */
-    public ArrayList<BluetoothDeviceCaracteristics> bluetoothListDevices(){
+    public ArrayList<BluetoothDevice> bluetoothListDevices(){
         Set<BluetoothDevice> periphAppaires = bA.getBondedDevices();
-        ArrayList<BluetoothDeviceCaracteristics> devices = new ArrayList();
+        ArrayList<BluetoothDevice> devices = new ArrayList();
         for(BluetoothDevice bD : periphAppaires){
-            devices.add(new BluetoothDeviceCaracteristics(bD.getName(), bD.getAddress(), (bD.getUuids())[0].getUuid()));
+            devices.add(bD);
+            Singleton.getInstance().list.add(bD.getName());
             //Toast.makeText(aCA.getApplicationContext(), "UUID device = "+(bD.getUuids())[0].getUuid() , Toast.LENGTH_LONG).show();
         }
         return devices;

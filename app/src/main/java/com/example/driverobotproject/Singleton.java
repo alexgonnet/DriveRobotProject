@@ -22,4 +22,5 @@ public class Singleton {
     Bluetooth bluetooth;
     LumSensor lumSensor;
     ArrayList<BluetoothDevice> devices;//ArrayList<BluetoothDeviceCaracteristics> devices;
+    ArrayList<String> list;
 }

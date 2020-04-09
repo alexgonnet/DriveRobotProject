@@ -11,6 +11,8 @@ package com.example.driverobotproject;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,8 +23,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -30,13 +35,14 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.EventListener;
+import java.util.List;
 
 import static android.graphics.Color.rgb;
 
 public class Parametres extends AppCompatActivity implements EventListener  {
 
     private Switch enableBT;
-    private LinearLayout l;
+    private ListView list;
     private CheckBox cLum;
     private SeekBar seekBar;
     private TextView pairDevice;
@@ -49,14 +55,13 @@ public class Parametres extends AppCompatActivity implements EventListener  {
         setContentView(R.layout.activity_parametres);
 
         enableBT = findViewById(R.id.switchBluetooth);
-        l = findViewById(R.id.linearLayoutDevices);
+        list = findViewById(R.id.listViewDevices);
         cLum = findViewById(R.id.checkBoxLuminosite);
         seekBar = findViewById(R.id.seekBar);
         pairDevice = findViewById(R.id.textViewPairDevice);
         connectedDevices = findViewById(R.id.textViewConnectedDevices);
 
         pairDevice.setBackgroundColor(rgb(238,238,238));
-
         if(Singleton.getInstance().bluetooth.bluetoothIsAvailable() != null) {
             enableBT.setChecked(Singleton.getInstance().bluetooth.bluetoothIsActive());
             displayConnectedDevices();
@@ -98,6 +103,14 @@ public class Parametres extends AppCompatActivity implements EventListener  {
             }
         });
 
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView,
+                                    View view, int i, long l) {
+
+            }
+        });
+
 
     }
 
@@ -112,54 +125,27 @@ public class Parametres extends AppCompatActivity implements EventListener  {
     }
 
     private void displayConnectedDevices(){
-
-        if(Singleton.getInstance().bluetooth.bluetoothIsAvailable() != null) {
-            final ArrayList<BluetoothDeviceCaracteristics> devices = Singleton.getInstance().bluetooth.bluetoothListDevices();
+        if(Singleton.getInstance().bluetooth.bluetoothIsAvailable() != null && Singleton.getInstance().bluetooth.bluetoothIsActive()) {
             //Display all the devices
-            for (int i = 0; i < devices.size(); i++) {
-                TextView tV = new TextView(this);
-                tV.setText(devices.get(i).getName());
-                tV.setId(i);
-                tV.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //connection
-                        Toast.makeText(getApplicationContext(), "Address = " + devices.get(v.getId()).getAddress(), Toast.LENGTH_LONG).show();
-                    }
-                });
-
-                l.addView(tV);
-            }
-            l.setVisibility(View.VISIBLE);
+            ArrayList<BluetoothDevice> bD = Singleton.getInstance().bluetooth.bluetoothListDevices();
+            //BluetoothListAdapter bluetoothListAdapter = new BluetoothListAdapter(this, bD);
+            ArrayAdapter bluetoothListAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, android.R.id.text1, Singleton.getInstance().list);
+            //list.setAdapter(bluetoothListAdapter);
         }
     }
 
     private void displayPairDevices(){
 
         if(Singleton.getInstance().bluetooth.bluetoothIsAvailable() != null) {
-            l.removeAllViews();
-            Toast.makeText(getApplicationContext(), "size = " + Singleton.getInstance().devices.size(), Toast.LENGTH_LONG).show();
+            Singleton.getInstance().bluetooth.bluetoothSearchDevices();
             //Display all the devices
-            for (int i = 0; i < Singleton.getInstance().devices.size(); i++) {
-                TextView tV = new TextView(this);
-                tV.setText(Singleton.getInstance().devices.get(i).getName());
-                tV.setId(i);
-                tV.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //connection
-                        Toast.makeText(getApplicationContext(), "Address = " + Singleton.getInstance().devices.get(v.getId()).getAddress(), Toast.LENGTH_LONG).show();
-                    }
-                });
-
-                l.addView(tV);
-            }
-            l.setVisibility(View.VISIBLE);
+            BluetoothListAdapter bluetoothListAdapter = new BluetoothListAdapter(this, Singleton.getInstance().devices);
+            list.setAdapter(bluetoothListAdapter);
         }
     }
 
     private void removeDevices(){
-        l.removeAllViews();
+        list.removeAllViews();
     }
 
     public void switchLumAuto(View v){
