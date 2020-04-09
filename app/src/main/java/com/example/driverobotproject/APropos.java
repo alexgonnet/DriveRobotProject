@@ -1,5 +1,10 @@
 package com.example.driverobotproject;
 
+/**
+ * Manage the "A propos" menu
+ * @author Alex GONNET
+ * @version 1
+ */
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;

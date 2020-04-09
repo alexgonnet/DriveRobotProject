@@ -1,7 +1,7 @@
 package com.example.driverobotproject;
 
 /**
- *
+ *Manage the "Parametres" menu
  * @author Alex GONNET
  * @version 2
  */
