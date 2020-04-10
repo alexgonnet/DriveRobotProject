@@ -4,21 +4,13 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
 import android.provider.Settings;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.SeekBar;
-import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class LumSensor extends Parametres {
@@ -31,16 +23,15 @@ public class LumSensor extends Parametres {
     public boolean initLumSensor(AppCompatActivity aCA){
         this.aCA = aCA;
         getPermission();
-/*
-        SensorManager sm = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
+
+        SensorManager sm = (SensorManager)aCA.getSystemService(Context.SENSOR_SERVICE);
         Sensor photometre = sm.getDefaultSensor(Sensor.TYPE_LIGHT);
         //Sensor exist
         if(photometre != null){
             return true;
         }else {
             return false;
-        }*/
-return true;
+        }
     }
 
     public void setBrightness(int brightness){
@@ -67,7 +58,7 @@ return true;
     }
 
 
-    private void getPermission(){
+    public void getPermission(){
         boolean value;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             value = Settings.System.canWrite(aCA.getApplicationContext());

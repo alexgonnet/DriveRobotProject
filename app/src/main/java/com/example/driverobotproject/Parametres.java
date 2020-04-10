@@ -3,43 +3,39 @@ package com.example.driverobotproject;
 /**
  *Manage the "Parametres" menu
  * @author Alex GONNET
- * @version 2
+ * @author Benjamin BOURG
+ * @version 3
  */
 
 /*************** Add a scroll to the  devices display ***********************/
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.content.ContentResolver;
-import android.content.Context;
+import android.Manifest;
 import android.content.Intent;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
-import android.net.Uri;
-import android.os.Build;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.ListAdapter;
+import android.widget.CompoundButton;
+
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.EventListener;
-import java.util.List;
 
 import static android.graphics.Color.rgb;
 
-public class Parametres extends AppCompatActivity implements EventListener  {
+public class Parametres extends AppCompatActivity implements EventListener, BluetoothCallback  {
 
     private Switch enableBT;
     private ListView list;
@@ -54,6 +50,8 @@ public class Parametres extends AppCompatActivity implements EventListener  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parametres);
 
+
+
         enableBT = findViewById(R.id.switchBluetooth);
         list = findViewById(R.id.listViewDevices);
         cLum = findViewById(R.id.checkBoxLuminosite);
@@ -62,14 +60,8 @@ public class Parametres extends AppCompatActivity implements EventListener  {
         connectedDevices = findViewById(R.id.textViewConnectedDevices);
 
         pairDevice.setBackgroundColor(rgb(238,238,238));
-        if(Singleton.getInstance().bluetooth.bluetoothIsAvailable() != null) {
-            enableBT.setChecked(Singleton.getInstance().bluetooth.bluetoothIsActive());
-            displayConnectedDevices();
-        }else {
-            enableBT.setEnabled(false);
-        }
 
-        if(!initLumSensor()){
+        if(!Singleton.getInstance().lumSensor.initLumSensor(this)){
             cLum.setEnabled(false);
         }
 
@@ -78,15 +70,15 @@ public class Parametres extends AppCompatActivity implements EventListener  {
         }
 
 
-        getPermission();
+        //Singleton.getInstance().lumSensor.getPermission();
         seekBar.setMax(255);
-        seekBar.setProgress(getBrightness());
+        seekBar.setProgress(Singleton.getInstance().lumSensor.getBrightness());
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser && success){
-                    setBrightness(progress);
+                if (fromUser && Singleton.getInstance().lumSensor.success){
+                    Singleton.getInstance().lumSensor.setBrightness(progress);
                 }
             }
 
@@ -107,55 +99,58 @@ public class Parametres extends AppCompatActivity implements EventListener  {
             @Override
             public void onItemClick(AdapterView<?> adapterView,
                                     View view, int i, long l) {
-
+                Toast.makeText(getApplicationContext(), "Connection", Toast.LENGTH_SHORT).show();
+                BluetoothManager.getInstance().connect(Singleton.getInstance().devices.get(i));
+                Toast.makeText(getApplicationContext(), "End connection", Toast.LENGTH_SHORT).show();
             }
         });
 
+        enableBT.setChecked(BluetoothManager.getInstance().isBluetoothOn());
+        enableBT.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    BluetoothManager.getInstance().turnOnBluetooth(Parametres.this);
+                    while(!BluetoothManager.getInstance().isBluetoothOn());
+                    displayConnectedDevices();
+                }else{
+                    BluetoothManager.getInstance().turnOffBluetooth();
+                    removeDevices();
+                }
+            }
+        });
 
-    }
-
-    public void switchBluetooth(View view){
-        Singleton.getInstance().bluetooth.bluetoothEnable(enableBT.isChecked());
-        if(enableBT.isChecked()){
+        if (BluetoothManager.getInstance().isBluetoothOn()){
             displayConnectedDevices();
-            //Refresh the screen
-        }else {
-            removeDevices();
+            Toast.makeText(getApplicationContext(), "Premier", Toast.LENGTH_SHORT).show();
         }
+
     }
 
     private void displayConnectedDevices(){
-        if(Singleton.getInstance().bluetooth.bluetoothIsAvailable() != null && Singleton.getInstance().bluetooth.bluetoothIsActive()) {
-            //Display all the devices
-            ArrayList<BluetoothDevice> bD = Singleton.getInstance().bluetooth.bluetoothListDevices();
-            //BluetoothListAdapter bluetoothListAdapter = new BluetoothListAdapter(this, bD);
-            ArrayAdapter bluetoothListAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, android.R.id.text1, Singleton.getInstance().list);
-            //list.setAdapter(bluetoothListAdapter);
-        }
+        BluetoothManager.getInstance().bluetoothListDevices();
+        ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, android.R.id.text1, Singleton.getInstance().list);
+        list.setAdapter(adapter);
+        Toast.makeText(getApplicationContext(), "Display", Toast.LENGTH_SHORT).show();
     }
 
     private void displayPairDevices(){
 
-        if(Singleton.getInstance().bluetooth.bluetoothIsAvailable() != null) {
-            Singleton.getInstance().bluetooth.bluetoothSearchDevices();
-            //Display all the devices
-            BluetoothListAdapter bluetoothListAdapter = new BluetoothListAdapter(this, Singleton.getInstance().devices);
-            list.setAdapter(bluetoothListAdapter);
-        }
     }
 
+
     private void removeDevices(){
-        list.removeAllViews();
+        list.setAdapter(null);
     }
 
     public void switchLumAuto(View v){
-        enableAutoLum(cLum.isChecked());
+        Singleton.getInstance().lumSensor.enableAutoLum(cLum.isChecked());
     }
 
     public void paramConnectedDevices(View view){
         connectedDevices.setBackgroundColor(rgb(255,255,255));
         pairDevice.setBackgroundColor(rgb(238,238,238));
-        if(Singleton.getInstance().bluetooth.bluetoothIsActive()){
+        if(BluetoothManager.getInstance().isBluetoothOn()){
             displayConnectedDevices();
         }
     }
@@ -163,89 +158,102 @@ public class Parametres extends AppCompatActivity implements EventListener  {
     public void paramPairDevice(View view){
         pairDevice.setBackgroundColor(rgb(255,255,255));
         connectedDevices.setBackgroundColor(rgb(238,238,238));
-        if(Singleton.getInstance().bluetooth.bluetoothIsActive()){
-            Singleton.getInstance().bluetooth.bluetoothSearchDevices();
+        if(BluetoothManager.getInstance().isBluetoothOn()){
+            //Singleton.getInstance().bluetooth.bluetoothSearchDevices();
             displayPairDevices();
         }
     }
 
 
 
-    /**********************************************/
-    /***************Luminosity********************/
-
-    private boolean initLumSensor(){
-        SensorManager sm = (SensorManager)getSystemService(Context.SENSOR_SERVICE);
-        Sensor photometre = sm.getDefaultSensor(Sensor.TYPE_LIGHT);
-        //Sensor exist
-        if(photometre != null){
-            return true;
-        }else {
-            return false;
-        }
-    }
-
-    private void setBrightness(int brightness){
-        if(brightness < 0){
-            brightness = 0;
-        }else if (brightness > 255){
-            brightness = 255;
-        }
-
-        ContentResolver contentResolver = getApplicationContext().getContentResolver();
-        Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS, brightness);
-    }
 
 
-    private int getBrightness(){
-        int brightness = 100;
-        try {
-            ContentResolver contentResolver = getApplicationContext().getContentResolver();
-            brightness = Settings.System.getInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS);
-        } catch (Settings.SettingNotFoundException e){
-            e.printStackTrace();
-        }
-        return brightness;
-    }
 
-
-    private void getPermission(){
-        boolean value;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-            value = Settings.System.canWrite(getApplicationContext());
-            if(value){
-                success = true;
-            } else {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
-                intent.setData((Uri.parse("package:" + getApplicationContext().getPackageName())));
-                startActivityForResult(intent, 10000);
-            }
-        }
-    }
+    /***********************************************************/
+    /***********************************************************/
+    /*************************BLUETOOTH*************************/
 
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if(requestCode == 1000){
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
-                boolean value = Settings.System.canWrite(getApplicationContext());
-                if(value){
-                    success = true;
-                } else {
-                    Toast.makeText(this, "Permission not granted", Toast.LENGTH_SHORT).show();
-                }
-            }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        int resultBluetooth = BluetoothManager.getInstance().CheckActivityResult(requestCode,
+                resultCode);
+
+        if(resultBluetooth == BluetoothManager.BLUETOOTH_ON){
+            enableBT.setChecked(true);
+        }else if(resultBluetooth == BluetoothManager.BLUETOOTH_OFF){
+            enableBT.setChecked(false);
+        }/*else if(resultBluetooth == BluetoothManager.BLUETOOTH_DISCOVERY_LISTEN){
+            toggleButtonVisible.setEnabled(false);
+            spinnerDiscovering.setVisibility(View.VISIBLE);
+            buttonConnect.setVisibility(View.INVISIBLE);
+        }else if(resultBluetooth == BluetoothManager.BLUETOOTH_DISCOVERY_CANCELED){
+            toggleButtonVisible.setEnabled(true);
+            toggleButtonVisible.setChecked(false);
+            spinnerDiscovering.setVisibility(View.INVISIBLE);
+            buttonConnect.setVisibility(View.VISIBLE);
+        }*/
+
+        super.onActivityResult(requestCode,resultCode,data);
+    }
+
+
+    //callback for when the device is connected or an error occurred. When the connection os ok,
+    // it starts a new Activity for the message exchange
+    @Override
+    public void onBluetoothConnection(int returnCode) {
+        Log.d("BT","onBluetoothConnection"+returnCode);
+        if(returnCode == BluetoothManager.BLUETOOTH_CONNECTED){
+            Toast.makeText(Parametres.this, "Connected",
+                    Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, MainActivity.class);
+
+            startActivity(intent);
+        }else if(returnCode == BluetoothManager.BLUETOOTH_CONNECTED_ERROR){
+            Toast.makeText(Parametres.this, "ConnectionError",
+                    Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void enableAutoLum(boolean state){
-        if (state){
-            ContentResolver contentResolver = getApplicationContext().getContentResolver();
-            Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC);
-        } else {
-            ContentResolver contentResolver = getApplicationContext().getContentResolver();
-            Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
-        }
+    @Override
+    public void onBluetoothDiscovery(int returnCode) {
+
     }
+
+    @Override
+    public void onReceiveData(String data) {
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1001: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // --->
+                    Log.d("BT", "permisionGranted");
+                } else {
+                    //TODO re-request
+                    Log.d("BT", "permisionNOTGranted");
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH}, 1001);
+
+                }
+                break;
+            }
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+
 }
 

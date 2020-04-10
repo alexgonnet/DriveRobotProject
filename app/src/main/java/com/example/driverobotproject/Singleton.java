@@ -19,8 +19,7 @@ public class Singleton {
     static public Singleton getInstance(){
         return instance;
     }
-    Bluetooth bluetooth;
     LumSensor lumSensor;
-    ArrayList<BluetoothDevice> devices;//ArrayList<BluetoothDeviceCaracteristics> devices;
+    ArrayList<BluetoothDevice> devices;
     ArrayList<String> list;
 }
