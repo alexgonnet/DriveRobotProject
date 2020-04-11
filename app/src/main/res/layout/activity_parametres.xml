@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/myCoordinatorLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
@@ -116,7 +117,7 @@
             android:layout_width="136dp"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:onClick="paramConnectedDevices"
+            android:onClick="paramPairedDevices"
             android:text="Appareils\n connectés"
             android:textSize="18sp" />
 
@@ -125,7 +126,7 @@
             android:layout_width="135dp"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:onClick="paramPairDevice"
+            android:onClick="paramSearchDevice"
             android:text="Appareillage"
             android:textSize="18sp" />
     </LinearLayout>

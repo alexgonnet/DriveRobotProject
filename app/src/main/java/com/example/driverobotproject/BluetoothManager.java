@@ -20,6 +20,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,6 +43,7 @@ public class BluetoothManager{
     
     private static final BluetoothManager instance = new BluetoothManager();
     public static BluetoothManager getInstance() { return instance; }
+    public static int REQUEST_ENABLE_BLUETOOTH = 1;
 
     //CHANGE THE UUID FOR YOUR CODE
     private static UUID MY_UUID;
@@ -67,7 +72,6 @@ public class BluetoothManager{
      */
      public boolean initializeBluetooth(Activity activity, String uuid, String name, AppCompatActivity aCA){
         Log.e("BluetoothAdapter","initializeBluetooth");
-         int REQUEST_ENABLE_BLUETOOTH = 1;
         myBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(myBluetoothAdapter == null) {
             Log.e("BluetoothAdapter","myBluetoothAdapter == null");
@@ -388,6 +392,19 @@ public class BluetoothManager{
     }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
      * List all the connected BT devices
      * @return devices a list of BT devices
@@ -403,6 +420,35 @@ public class BluetoothManager{
     }
 
 
+    /**
+     * Active research unpaired device
+     */
+    public void bluetoothSearchDevices(){
+        Singleton.getInstance().devices = new ArrayList<BluetoothDevice>();
+        IntentFilter intentFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        Singleton.getInstance().aCA.registerReceiver(myReceiver, intentFilter);
+        myBluetoothAdapter.startDiscovery();
+    }
+
+    /**
+     * Search unpaired device
+     */
+    BroadcastReceiver myReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothDevice.ACTION_FOUND.equals(action)){
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                Singleton.getInstance().devices.add(device);
+                if(device.getName() == null) {
+                    Singleton.getInstance().list.add(device.getAddress());
+                }else {
+                    Singleton.getInstance().list.add(device.getName());
+                }
+                Singleton.getInstance().adapter.notifyDataSetChanged();
+            }
+        }
+    };
 
 
 
@@ -452,15 +498,17 @@ public class BluetoothManager{
             this.device = device;
             try {
                 socket = device.createRfcommSocketToServiceRecord(MY_UUID);
+                socket.connect();
                 connected = true;
+                Toast.makeText(Singleton.getInstance().aCA.getApplicationContext(), "Connection successful",Toast.LENGTH_SHORT).show();
             } catch (IOException e) {
                 e.printStackTrace();
+                Toast.makeText(Singleton.getInstance().aCA.getApplicationContext(), "Connection failed",Toast.LENGTH_SHORT).show();
             }
         }
 
         public void run(){
             try {
-                socket.connect();
                 Message message = Message.obtain();
                 message.what = STATE_CONNECTED;
                 handler.sendMessage(message);
@@ -519,4 +567,25 @@ public class BluetoothManager{
             }
         }
     }
+
+
+    /**
+     * Alert when there is an obstacle
+     * !!!! Doesn't work, app close !!!!
+     */
+    public void receiveAlert(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(Singleton.getInstance().aCAMainAct.getApplicationContext());
+        builder.setTitle("Info");
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.setMessage("There is a danger from of you !!");
+        AlertDialog aD = builder.create();
+        aD.show();
+        //Snackbar.make(Singleton.getInstance().aCAMainAct.findViewById(R.id.myCoordinatorLayout), "There is a danger from of you !!", Snackbar.LENGTH_SHORT).show();
+    }
 }
+

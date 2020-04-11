@@ -7,7 +7,6 @@ package com.example.driverobotproject;
  * @version 3
  */
 
-/*************** Add a scroll to the  devices display ***********************/
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,11 +30,14 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
+
+import java.util.ArrayList;
 import java.util.EventListener;
 
 import static android.graphics.Color.rgb;
 
-public class Parametres extends AppCompatActivity implements EventListener, BluetoothCallback  {
+public class Parametres extends AppCompatActivity implements EventListener  {
 
     private Switch enableBT;
     private ListView list;
@@ -50,14 +52,15 @@ public class Parametres extends AppCompatActivity implements EventListener, Blue
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_parametres);
 
-
-
         enableBT = findViewById(R.id.switchBluetooth);
         list = findViewById(R.id.listViewDevices);
         cLum = findViewById(R.id.checkBoxLuminosite);
         seekBar = findViewById(R.id.seekBar);
         pairDevice = findViewById(R.id.textViewPairDevice);
         connectedDevices = findViewById(R.id.textViewConnectedDevices);
+
+        //Get the activity
+        Singleton.getInstance().aCA = this;
 
         pairDevice.setBackgroundColor(rgb(238,238,238));
 
@@ -99,9 +102,7 @@ public class Parametres extends AppCompatActivity implements EventListener, Blue
             @Override
             public void onItemClick(AdapterView<?> adapterView,
                                     View view, int i, long l) {
-                Toast.makeText(getApplicationContext(), "Connection", Toast.LENGTH_SHORT).show();
                 BluetoothManager.getInstance().connect(Singleton.getInstance().devices.get(i));
-                Toast.makeText(getApplicationContext(), "End connection", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -112,7 +113,7 @@ public class Parametres extends AppCompatActivity implements EventListener, Blue
                 if(isChecked){
                     BluetoothManager.getInstance().turnOnBluetooth(Parametres.this);
                     while(!BluetoothManager.getInstance().isBluetoothOn());
-                    displayConnectedDevices();
+                    displayPairedDevices();
                 }else{
                     BluetoothManager.getInstance().turnOffBluetooth();
                     removeDevices();
@@ -121,21 +122,22 @@ public class Parametres extends AppCompatActivity implements EventListener, Blue
         });
 
         if (BluetoothManager.getInstance().isBluetoothOn()){
-            displayConnectedDevices();
-            Toast.makeText(getApplicationContext(), "Premier", Toast.LENGTH_SHORT).show();
+            displayPairedDevices();
         }
 
     }
 
-    private void displayConnectedDevices(){
+    private void displayPairedDevices(){
         BluetoothManager.getInstance().bluetoothListDevices();
         ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, android.R.id.text1, Singleton.getInstance().list);
         list.setAdapter(adapter);
-        Toast.makeText(getApplicationContext(), "Display", Toast.LENGTH_SHORT).show();
     }
 
-    private void displayPairDevices(){
-
+    private void displaySearchDevices(){
+        Singleton.getInstance().list = new ArrayList<String>();
+        Singleton.getInstance().adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, android.R.id.text1, Singleton.getInstance().list);
+        BluetoothManager.getInstance().bluetoothSearchDevices();
+        list.setAdapter(Singleton.getInstance().adapter);
     }
 
 
@@ -147,20 +149,20 @@ public class Parametres extends AppCompatActivity implements EventListener, Blue
         Singleton.getInstance().lumSensor.enableAutoLum(cLum.isChecked());
     }
 
-    public void paramConnectedDevices(View view){
+    public void paramPairedDevices(View view){
         connectedDevices.setBackgroundColor(rgb(255,255,255));
         pairDevice.setBackgroundColor(rgb(238,238,238));
         if(BluetoothManager.getInstance().isBluetoothOn()){
-            displayConnectedDevices();
+            displayPairedDevices();
         }
     }
 
-    public void paramPairDevice(View view){
+    public void paramSearchDevice(View view){
         pairDevice.setBackgroundColor(rgb(255,255,255));
         connectedDevices.setBackgroundColor(rgb(238,238,238));
         if(BluetoothManager.getInstance().isBluetoothOn()){
             //Singleton.getInstance().bluetooth.bluetoothSearchDevices();
-            displayPairDevices();
+            displaySearchDevices();
         }
     }
 
@@ -172,80 +174,6 @@ public class Parametres extends AppCompatActivity implements EventListener, Blue
     /***********************************************************/
     /***********************************************************/
     /*************************BLUETOOTH*************************/
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        int resultBluetooth = BluetoothManager.getInstance().CheckActivityResult(requestCode,
-                resultCode);
-
-        if(resultBluetooth == BluetoothManager.BLUETOOTH_ON){
-            enableBT.setChecked(true);
-        }else if(resultBluetooth == BluetoothManager.BLUETOOTH_OFF){
-            enableBT.setChecked(false);
-        }/*else if(resultBluetooth == BluetoothManager.BLUETOOTH_DISCOVERY_LISTEN){
-            toggleButtonVisible.setEnabled(false);
-            spinnerDiscovering.setVisibility(View.VISIBLE);
-            buttonConnect.setVisibility(View.INVISIBLE);
-        }else if(resultBluetooth == BluetoothManager.BLUETOOTH_DISCOVERY_CANCELED){
-            toggleButtonVisible.setEnabled(true);
-            toggleButtonVisible.setChecked(false);
-            spinnerDiscovering.setVisibility(View.INVISIBLE);
-            buttonConnect.setVisibility(View.VISIBLE);
-        }*/
-
-        super.onActivityResult(requestCode,resultCode,data);
-    }
-
-
-    //callback for when the device is connected or an error occurred. When the connection os ok,
-    // it starts a new Activity for the message exchange
-    @Override
-    public void onBluetoothConnection(int returnCode) {
-        Log.d("BT","onBluetoothConnection"+returnCode);
-        if(returnCode == BluetoothManager.BLUETOOTH_CONNECTED){
-            Toast.makeText(Parametres.this, "Connected",
-                    Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(this, MainActivity.class);
-
-            startActivity(intent);
-        }else if(returnCode == BluetoothManager.BLUETOOTH_CONNECTED_ERROR){
-            Toast.makeText(Parametres.this, "ConnectionError",
-                    Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    @Override
-    public void onBluetoothDiscovery(int returnCode) {
-
-    }
-
-    @Override
-    public void onReceiveData(String data) {
-
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case 1001: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // --->
-                    Log.d("BT", "permisionGranted");
-                } else {
-                    //TODO re-request
-                    Log.d("BT", "permisionNOTGranted");
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH}, 1001);
-
-                }
-                break;
-            }
-        }
-
-
-    }
 
 
 

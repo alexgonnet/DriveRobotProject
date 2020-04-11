@@ -1,6 +1,9 @@
 package com.example.driverobotproject;
 
 import android.bluetooth.BluetoothDevice;
+import android.widget.ArrayAdapter;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 
@@ -22,4 +25,7 @@ public class Singleton {
     LumSensor lumSensor;
     ArrayList<BluetoothDevice> devices;
     ArrayList<String> list;
+    AppCompatActivity aCA;
+    AppCompatActivity aCAMainAct;
+    ArrayAdapter<String> adapter;
 }

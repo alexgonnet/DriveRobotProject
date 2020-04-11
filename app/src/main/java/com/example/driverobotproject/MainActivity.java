@@ -20,6 +20,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import static android.bluetooth.BluetoothAdapter.ACTION_REQUEST_ENABLE;
 
 public class MainActivity extends AppCompatActivity implements BluetoothCallback {
@@ -33,13 +35,13 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
         NetworkInfo networkInfo = commuMan.getActiveNetworkInfo();
         if(networkInfo == null)
         {
-            Toast.makeText(MainActivity.this,
-                    "The device is not connected",
-                    Toast.LENGTH_LONG).show();
+            //Toast.makeText(MainActivity.this, "The device is not connected", Toast.LENGTH_LONG).show();
         }
 
         Singleton.getInstance().lumSensor = new LumSensor();
+        Singleton.getInstance().aCAMainAct = this;
         BluetoothManager.getInstance().initializeBluetooth(this,"00001101-0000-1000-8000-00805F9B34FB","HEALTH_MODULE_1", this);
+
     }
 
     public void onButtonAProposClicked(View v) {
@@ -61,7 +63,6 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
     }
 
     public void onButtonStartClicked(View v) {
-
         Log.i("Mouvement", "Start");
         if (BluetoothManager.getInstance().connected) {
             BluetoothManager.getInstance().senReceiveMsg(" ");
@@ -129,11 +130,18 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
         super.onDestroy();
     }
 
-/*
+
+    /**
+     * Check the user answer from the BT enable
+     * @author Benjamin BOURG
+     * @param requestCode the expected code
+     * @param resultCode the result code
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode != 1 && requestCode == 1 && data.getAction().equals(ACTION_REQUEST_ENABLE)){
+        if(resultCode == RESULT_CANCELED && requestCode == BluetoothManager.getInstance().REQUEST_ENABLE_BLUETOOTH){
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle("Info");
             builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
@@ -147,5 +155,5 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
             aD.show();
         }
     }
- */
+
 }
