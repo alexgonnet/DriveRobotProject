@@ -1,6 +1,8 @@
 package com.example.driverobotproject;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
@@ -397,7 +399,7 @@ public class BluetoothManager{
 
 
 
-
+/************************************************************************************************************************/
 
 
 
@@ -496,6 +498,7 @@ public class BluetoothManager{
 
         public ClientClass (BluetoothDevice device){
             this.device = device;
+            myBluetoothAdapter.cancelDiscovery();
             try {
                 socket = device.createRfcommSocketToServiceRecord(MY_UUID);
                 socket.connect();

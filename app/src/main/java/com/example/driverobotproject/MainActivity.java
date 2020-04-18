@@ -22,6 +22,8 @@ import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.sql.Date;
+
 import static android.bluetooth.BluetoothAdapter.ACTION_REQUEST_ENABLE;
 
 public class MainActivity extends AppCompatActivity implements BluetoothCallback {
@@ -35,13 +37,15 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
         NetworkInfo networkInfo = commuMan.getActiveNetworkInfo();
         if(networkInfo == null)
         {
-            //Toast.makeText(MainActivity.this, "The device is not connected", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "The device is not connected", Toast.LENGTH_LONG).show();
         }
+        //Toast.makeText(MainActivity.this, "The device is connected to "+networkInfo, Toast.LENGTH_LONG).show();
 
         Singleton.getInstance().lumSensor = new LumSensor();
         Singleton.getInstance().aCAMainAct = this;
         BluetoothManager.getInstance().initializeBluetooth(this,"00001101-0000-1000-8000-00805F9B34FB","HEALTH_MODULE_1", this);
-
+        Data d = new Data("avancer", "100");
+        //(new Connectivity()).execute(d);
     }
 
     public void onButtonAProposClicked(View v) {
@@ -150,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
                     dialog.cancel();
                 }
             });
-            builder.setMessage("Tu use the app, Bluetooth is required");
+            builder.setMessage("Too use the app, Bluetooth is required");
             AlertDialog aD = builder.create();
             aD.show();
         }

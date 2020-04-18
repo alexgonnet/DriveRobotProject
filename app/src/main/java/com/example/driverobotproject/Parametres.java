@@ -180,6 +180,12 @@ public class Parametres extends AppCompatActivity implements EventListener  {
 
 
 
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        Singleton.getInstance().aCA.unregisterReceiver(BluetoothManager.getInstance().myReceiver);
+    }
+
 
 
 
