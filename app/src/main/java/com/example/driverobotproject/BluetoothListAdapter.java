@@ -30,7 +30,7 @@ public class BluetoothListAdapter extends ArrayAdapter<BluetoothDevice> {
 
         if (convertView == null) {
 
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_display, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_display_model, parent, false);
 
         }
 
@@ -39,7 +39,11 @@ public class BluetoothListAdapter extends ArrayAdapter<BluetoothDevice> {
 
         // Populate the data into the template view using the data object
 
-        tvName.setText(item.getName());
+        if(item.getName() == null) {
+            tvName.setText(item.getAddress());
+        }else {
+            tvName.setText(item.getName());
+        }
 
         // Return the completed view to render on screen
 

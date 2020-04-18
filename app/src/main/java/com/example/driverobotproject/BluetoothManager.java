@@ -413,11 +413,9 @@ public class BluetoothManager{
      */
     public void bluetoothListDevices(){
         Set<BluetoothDevice> periphAppaires = myBluetoothAdapter.getBondedDevices();
-        Singleton.getInstance().list = new ArrayList<String>();
         Singleton.getInstance().devices = new ArrayList<BluetoothDevice>();
         for(BluetoothDevice bD : periphAppaires){
             Singleton.getInstance().devices.add(bD);
-            Singleton.getInstance().list.add(bD.getName());
         }
     }
 
@@ -426,7 +424,6 @@ public class BluetoothManager{
      * Active research unpaired device
      */
     public void bluetoothSearchDevices(){
-        Singleton.getInstance().devices = new ArrayList<BluetoothDevice>();
         IntentFilter intentFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         Singleton.getInstance().aCA.registerReceiver(myReceiver, intentFilter);
         myBluetoothAdapter.startDiscovery();
@@ -442,11 +439,11 @@ public class BluetoothManager{
             if (BluetoothDevice.ACTION_FOUND.equals(action)){
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 Singleton.getInstance().devices.add(device);
-                if(device.getName() == null) {
+               /* if(device.getName() == null) {
                     Singleton.getInstance().list.add(device.getAddress());
                 }else {
                     Singleton.getInstance().list.add(device.getName());
-                }
+                }*/
                 Singleton.getInstance().adapter.notifyDataSetChanged();
             }
         }

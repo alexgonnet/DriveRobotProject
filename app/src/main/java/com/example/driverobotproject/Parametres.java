@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -129,13 +130,13 @@ public class Parametres extends AppCompatActivity implements EventListener  {
 
     private void displayPairedDevices(){
         BluetoothManager.getInstance().bluetoothListDevices();
-        ArrayAdapter adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, android.R.id.text1, Singleton.getInstance().list);
+        BluetoothListAdapter adapter = new BluetoothListAdapter(getApplicationContext(), Singleton.getInstance().devices);
         list.setAdapter(adapter);
     }
 
     private void displaySearchDevices(){
-        Singleton.getInstance().list = new ArrayList<String>();
-        Singleton.getInstance().adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, android.R.id.text1, Singleton.getInstance().list);
+        Singleton.getInstance().devices = new ArrayList<BluetoothDevice>();
+        Singleton.getInstance().adapter = new BluetoothListAdapter(getApplicationContext(), Singleton.getInstance().devices);
         BluetoothManager.getInstance().bluetoothSearchDevices();
         list.setAdapter(Singleton.getInstance().adapter);
     }

@@ -27,5 +27,5 @@ public class Singleton {
     ArrayList<String> list;
     AppCompatActivity aCA;
     AppCompatActivity aCAMainAct;
-    ArrayAdapter<String> adapter;
+    BluetoothListAdapter adapter;
 }
