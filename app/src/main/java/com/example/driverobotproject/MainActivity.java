@@ -39,13 +39,11 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
         {
             Toast.makeText(MainActivity.this, "The device is not connected", Toast.LENGTH_LONG).show();
         }
-        //Toast.makeText(MainActivity.this, "The device is connected to "+networkInfo, Toast.LENGTH_LONG).show();
 
         Singleton.getInstance().lumSensor = new LumSensor();
         Singleton.getInstance().aCAMainAct = this;
+        Singleton.getInstance().lumSensor.isLumSensorAvalaible();
         BluetoothManager.getInstance().initializeBluetooth(this,"00001101-0000-1000-8000-00805F9B34FB","HEALTH_MODULE_1", this);
-        Data d = new Data("avancer", "100");
-        //(new Connectivity()).execute(d);
     }
 
     public void onButtonAProposClicked(View v) {
@@ -70,13 +68,21 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
         Log.i("Mouvement", "Start");
         if (BluetoothManager.getInstance().connected) {
             BluetoothManager.getInstance().senReceiveMsg(" ");
+
+            Data d = new Data("Start", Singleton.getInstance().lumSensor.getSensorValue());
+            (new Connectivity()).execute(d);
         }
+        Data d = new Data("Start", Singleton.getInstance().lumSensor.getSensorValue());
+        (new Connectivity()).execute(d);
     }
 
     public void onButtonUpClicked(View v) {
         Log.i("Direction", "Up");
         if (BluetoothManager.getInstance().connected) {
             BluetoothManager.getInstance().senReceiveMsg("z");
+
+            Data d = new Data("Straight", Singleton.getInstance().lumSensor.getSensorValue());
+            (new Connectivity()).execute(d);
         }
     }
 
@@ -85,6 +91,9 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
         Log.i("Direction", "Down");
         if (BluetoothManager.getInstance().connected) {
             BluetoothManager.getInstance().senReceiveMsg("s");
+
+            Data d = new Data("Back", Singleton.getInstance().lumSensor.getSensorValue());
+            (new Connectivity()).execute(d);
         }
     }
 
@@ -93,6 +102,9 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
         Log.i("Direction", "Left");
         if (BluetoothManager.getInstance().connected) {
             BluetoothManager.getInstance().senReceiveMsg("q");
+
+            Data d = new Data("Left", Singleton.getInstance().lumSensor.getSensorValue());
+            (new Connectivity()).execute(d);
         }
     }
 
@@ -101,6 +113,9 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
         Log.i("Direction", "Right");
         if (BluetoothManager.getInstance().connected) {
             BluetoothManager.getInstance().senReceiveMsg("d");
+
+            Data d = new Data("Right", Singleton.getInstance().lumSensor.getSensorValue());
+            (new Connectivity()).execute(d);
         }
     }
 

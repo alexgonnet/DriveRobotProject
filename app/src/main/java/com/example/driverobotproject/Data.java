@@ -6,11 +6,10 @@ import java.util.Date;
 public class Data {
 
     public String action;
-    public String luminosity;
-    public static String idProject = "30";
+    public int luminosity;
     public Timestamp timestamp;
 
-    public Data(String action, String luminosity){
+    public Data(String action, int luminosity){
         this.action = action;
         this.luminosity = luminosity;
         this.timestamp = new Timestamp(System.currentTimeMillis());
