@@ -51,13 +51,13 @@ public class BluetoothManager{
     public static final int STATE_LISTENING = 1;     // now listening for incoming connections
     public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
     public static final int STATE_CONNECTED = 3;  // now connected to a remote device
-    public static final int STATE_CONNECTION_FAILED = 4;  // now connected to a remote device
-    public static final int STATE_MESSAGE_RECEIVED = 5;  // now connected to a remote device
+    public static final int STATE_CONNECTION_FAILED = 4;  // connection to a remote device failed
+    public static final int STATE_MESSAGE_RECEIVED = 5;  // message received from a remote device
 
     /**
      * Object for the emission and reception of a message
      */
-    SendReceive sendReiceve;
+    SendReceive sendReceive;
 
     /**
      * State of the Bluetooth
@@ -260,8 +260,8 @@ public class BluetoothManager{
                 message.what = STATE_CONNECTED;
                 handler.sendMessage(message);
 
-                sendReiceve = new SendReceive(socket);
-                sendReiceve.start();
+                sendReceive = new SendReceive(socket);
+                sendReceive.start();
             } catch (IOException e){
                 e.printStackTrace();
                 Message message = Message.obtain();
@@ -277,7 +277,7 @@ public class BluetoothManager{
      * @param msg the message
      */
     public void senReceiveMsg(String msg){
-        sendReiceve.write(msg.getBytes());
+        sendReceive.write(msg.getBytes());
     }
 
     private class SendReceive extends Thread {

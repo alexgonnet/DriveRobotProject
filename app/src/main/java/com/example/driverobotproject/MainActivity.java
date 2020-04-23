@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
         Singleton.getInstance().lumSensor = new LumSensor();
         Singleton.getInstance().aCAMainAct = this;
         //Check if sensor available
-        Singleton.getInstance().lumSensor.isLumSensorAvalaible();
+        Singleton.getInstance().lumSensor.isLumSensorAvailable();
         //Initialization of the Bluetooth
         BluetoothManager.getInstance().initializeBluetooth("00001101-0000-1000-8000-00805F9B34FB");
 
@@ -195,7 +195,6 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
 
     /**
      * Check the user answer from the BT enable
-     * @author Benjamin BOURG
      * @param requestCode the expected code
      * @param resultCode the result code
      * @param data
@@ -219,6 +218,10 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
         }
     }
 
+    /**
+     * Method call to send an http request
+     * @param action executed by the SAMBot
+     */
     private void sendData(String action){
         this.timestamp = new Timestamp(System.currentTimeMillis());
         (new Connectivity()).execute("http://cabani.free.fr/ise/adddata.php?idproject="+idProject+"&lux="+Singleton.getInstance().lumSensor.getSensorValue()+"&timestamp="+(timestamp.getTime()/1000)+"&action="+action);

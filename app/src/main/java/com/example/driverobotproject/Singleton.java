@@ -33,17 +33,17 @@ public class Singleton {
     ArrayList<BluetoothDevice> devices;
 
     /**
-     * The parametres activity activity
+     * The parametres activity
      */
     AppCompatActivity aCA;
 
     /**
-     * The main activity activity
+     * The main activity
      */
     AppCompatActivity aCAMainAct;
 
     /**
-     * Personalized listview adapter
+     * Personalized listView adapter
      */
     BluetoothListAdapter adapter;
 

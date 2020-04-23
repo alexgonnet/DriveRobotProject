@@ -30,7 +30,7 @@ public class LumSensor extends Parametres implements SensorEventListener {
     public boolean success = false;
 
     /**
-     * The main activity activity
+     * The main activity
      */
     private AppCompatActivity aCA;
 
@@ -53,7 +53,7 @@ public class LumSensor extends Parametres implements SensorEventListener {
     /**
      * Check if the device has a luminosity sensor
      */
-    public void isLumSensorAvalaible(){
+    public void isLumSensorAvailable(){
         getPermission();
 
         SensorManager sm = (SensorManager)Singleton.getInstance().aCAMainAct.getSystemService(Context.SENSOR_SERVICE);
@@ -68,7 +68,7 @@ public class LumSensor extends Parametres implements SensorEventListener {
     }
 
     /**
-     * Return the existance or not of the luminosity sensor
+     * Return the existence or not of the luminosity sensor
      * @param aCA the activity from an other activity
      * @return sensorExist if the device has a luminosity sensor, return true otherwise false
      */
@@ -121,7 +121,7 @@ public class LumSensor extends Parametres implements SensorEventListener {
 
 
     /**
-     * Ask the permission to modified luminosity settings
+     * Ask the permission to modify luminosity settings
      */
     public void getPermission(){
         boolean value;
@@ -159,8 +159,8 @@ public class LumSensor extends Parametres implements SensorEventListener {
     }
 
     /**
-     * Activate/Disactivate automatic device luminosity
-     * @param state true if activate | false if disactivate
+     * Activate/Deactivate automatic device luminosity
+     * @param state true if activate | false if deactivate
      */
     public void enableAutoLum(boolean state){
         if (state){

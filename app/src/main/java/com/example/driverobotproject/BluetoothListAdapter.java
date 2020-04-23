@@ -11,7 +11,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 /**
- * Personalized listview adapter for Bluetooth devices
+ * Personalized listView adapter for Bluetooth devices
  * @author Benjamin BOURG
  * @version 1
  */
@@ -29,7 +29,7 @@ public class BluetoothListAdapter extends ArrayAdapter<BluetoothDevice> {
 
 
     /**
-     * Create the display of the BT device information acciording to the template created in the XML file
+     * Create the display of the BT device information according to the template created in the XML file
      * @param position of the item in the list
      * @param convertView
      * @param parent

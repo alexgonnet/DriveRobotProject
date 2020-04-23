@@ -22,7 +22,7 @@ import java.util.EventListener;
 import static android.graphics.Color.rgb;
 
 /**
- * Manage the "Parametres" menu
+ * Manage the "Paramètres" menu
  * @author Alex GONNET
  * @author Benjamin BOURG
  * @version 3
@@ -31,7 +31,7 @@ import static android.graphics.Color.rgb;
 public class Parametres extends AppCompatActivity implements EventListener  {
 
     /**
-     * Button to activate or disactivate the BT
+     * Button to activate or deactivate the BT
      */
     private Switch enableBT;
 
@@ -41,17 +41,17 @@ public class Parametres extends AppCompatActivity implements EventListener  {
     private ListView list;
 
     /**
-     * Checkbox to activate/diactivate the automatic luminosity
+     * Checkbox to activate/deactivate the automatic luminosity
      */
     private CheckBox cLum;
 
     /**
-     * Seekbar to adjust manualy the luminosity
+     * Seekbar to adjust manually the luminosity
      */
     private SeekBar seekBar;
 
     /**
-     * Text Unpair device
+     * Text Unpaired device
      */
     private TextView unpairDevice;
 
@@ -61,7 +61,7 @@ public class Parametres extends AppCompatActivity implements EventListener  {
     private TextView connectedDevices;
 
     /**
-     * To know witch type of devices are display
+     * To know which type of devices are displayed
      */
     private boolean pairDisplay = true;
 
@@ -120,7 +120,7 @@ public class Parametres extends AppCompatActivity implements EventListener  {
             }
         });
 
-        //Iniatilisation of the listener on the listview
+        //Initialisation of the listener on the ListView
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             /**
              * Connect to the device on click
@@ -180,7 +180,7 @@ public class Parametres extends AppCompatActivity implements EventListener  {
     }
 
     /**
-     *Relove devices from the list view
+     *Remove devices from the ListView
      */
     private void removeDevices(){
         list.setAdapter(null);
@@ -195,7 +195,7 @@ public class Parametres extends AppCompatActivity implements EventListener  {
     }
 
     /**
-     * display paired devices on click
+     * Display paired devices on click
      * @param view
      */
     public void paramPairedDevices(View view){
@@ -231,7 +231,7 @@ public class Parametres extends AppCompatActivity implements EventListener  {
     }
 
     /**
-     * refresh the devices display
+     * Refresh the devices display
      * @param v
      */
     public void refresh(View v){
