@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
     public static String idProject = "30";
 
     /**
-     *
+     * Get the time
      */
     public Timestamp timestamp;
 

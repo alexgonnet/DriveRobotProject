@@ -132,7 +132,7 @@ public class LumSensor extends Parametres implements SensorEventListener {
             } else {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
                 intent.setData((Uri.parse("package:" + Singleton.getInstance().aCAMainAct.getApplicationContext().getPackageName())));
-                startActivityForResult(intent, 10000);
+                Singleton.getInstance().aCAMainAct.startActivityForResult(intent, 10000);
             }
         }
     }

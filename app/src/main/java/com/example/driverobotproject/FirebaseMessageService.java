@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.os.Build;
 import android.util.Log;
@@ -15,6 +16,13 @@ import androidx.core.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+
+/**
+ * Handle firebase notification
+ * @author Benjamin BOURG
+ * @version 1
+ */
+
 public class FirebaseMessageService extends FirebaseMessagingService {
 
     @Override
@@ -23,6 +31,7 @@ public class FirebaseMessageService extends FirebaseMessagingService {
         Singleton.getInstance().token = token;
         Log.i("Debug", "New Token: "+token);
     }
+
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -39,8 +48,13 @@ public class FirebaseMessageService extends FirebaseMessagingService {
         }
     }
 
+    /**
+     * Display the notification
+     * @param messageTitle title of the notification
+     * @param messageBody text of the notification
+     */
     private void sendVisualNotification(String messageTitle, String messageBody) {
-
+        Log.i("Debug", "Message display");
         // Create an Intent that will be shown when user will click on the Notification
         Intent intent = new Intent(Singleton.getInstance().aCAMainAct.getApplicationContext(), MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -50,6 +64,7 @@ public class FirebaseMessageService extends FirebaseMessagingService {
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(Singleton.getInstance().aCAMainAct.getApplicationContext(), Singleton.getInstance().aCAMainAct.getString(R.string.CHANNEL_ID))
                         .setSmallIcon(R.drawable.apropos)
+                        .setLargeIcon(BitmapFactory.decodeResource(Singleton.getInstance().aCAMainAct.getResources(), R.drawable.apropos))
                         .setContentTitle(messageTitle)
                         .setContentText(messageBody)
                         .setVibrate(new long[]{1000, 1000, 1000, 1000, 1000})
