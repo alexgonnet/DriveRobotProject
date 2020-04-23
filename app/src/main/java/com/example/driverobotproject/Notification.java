@@ -35,6 +35,7 @@ public class Notification {
                     return;
                 }
                 Log.i("Debug", "The result : "+task.getResult().getToken());
+                Singleton.getInstance().token = task.getResult().getToken();
             }
         });
 
