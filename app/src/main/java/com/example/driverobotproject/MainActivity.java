@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
         NetworkInfo networkInfo = commuMan.getActiveNetworkInfo();
         if(networkInfo == null)
         {
-            Toast.makeText(MainActivity.this, "The device is not connected", Toast.LENGTH_LONG).show();
+            requestWifi();
         }
 
         //Initialization of the luminosity sensor
@@ -221,5 +222,23 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
     private void sendData(String action){
         this.timestamp = new Timestamp(System.currentTimeMillis());
         (new Connectivity()).execute("http://cabani.free.fr/ise/adddata.php?idproject="+idProject+"&lux="+Singleton.getInstance().lumSensor.getSensorValue()+"&timestamp="+(timestamp.getTime()/1000)+"&action="+action);
+    }
+
+    /**
+     * Method call to request WIFI
+     */
+    private void requestWifi(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Info");
+        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.setMessage("For an optimal utilization, Wifi is required ! Could you activate it ?");
+        AlertDialog aD = builder.create();
+        aD.show();
     }
 }
