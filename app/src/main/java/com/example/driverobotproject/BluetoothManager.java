@@ -323,7 +323,7 @@ public class BluetoothManager{
      * Send a message to the firebase to get a notification
      */
     private void dangerAlert(){
-        (new Connectivity()).execute("benphototravel.000webhostapp.com/notif.php?send&token="+Singleton.getInstance().token);
+        (new Connectivity()).execute("https://benphototravel.000webhostapp.com/notif.php?send&token="+Singleton.getInstance().token);
         Log.i("Danger", "dangerAlert: "+Singleton.getInstance().token);
     }
 }
