@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">DriveRobotProject</string>
+    <string name="CHANNEL_ID">alert</string>
+    <string name="CHANNEL_NAME">alert</string>
 </resources>

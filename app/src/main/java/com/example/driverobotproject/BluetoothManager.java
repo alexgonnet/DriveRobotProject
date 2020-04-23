@@ -1,31 +1,17 @@
 package com.example.driverobotproject;
 
 import android.app.Activity;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-
-import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,44 +21,58 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- *
+ * Bluetooth manager class
  * @author Benjamin BOURG
  * @version 1.3
  */
 public class BluetoothManager{
 
-
-    
     private static final BluetoothManager instance = new BluetoothManager();
     public static BluetoothManager getInstance() { return instance; }
+
+    /**
+     * Enable BT code
+     */
     public static int REQUEST_ENABLE_BLUETOOTH = 1;
 
-    //CHANGE THE UUID FOR YOUR CODE
+    /**
+     * The UUID
+     */
     private static UUID MY_UUID;
-    private static String SEARCH_NAME;
-    private static final int REQUEST_ENABLE_BT = 1;
-    private static final int REQUEST_VISIBLE_BT = 2;
+
+    /**
+     * BT socket
+     */
     private BluetoothSocket mBtSocket;
 
-    // Constants that indicate the current connection state
-    public static final int STATE_NONE = 0;       // we're doing nothing
+    /**
+     * Constants that indicate the current connection state
+     */
     public static final int STATE_LISTENING = 1;     // now listening for incoming connections
     public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
     public static final int STATE_CONNECTED = 3;  // now connected to a remote device
     public static final int STATE_CONNECTION_FAILED = 4;  // now connected to a remote device
     public static final int STATE_MESSAGE_RECEIVED = 5;  // now connected to a remote device
 
-
+    /**
+     * Object for the emission and reception of a message
+     */
     SendReceive sendReiceve;
+
+    /**
+     * State of the Bluetooth
+     */
     boolean connected = false;
 
-
+    /**
+     * The Bluetooth adapter
+     */
     private BluetoothAdapter myBluetoothAdapter;
 
     /**
      * Initialisation of the BT connection
      */
-     public boolean initializeBluetooth(Activity activity, String uuid, String name, AppCompatActivity aCA){
+     public boolean initializeBluetooth(String uuid){
         Log.e("BluetoothAdapter","initializeBluetooth");
         myBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(myBluetoothAdapter == null) {
@@ -81,17 +81,18 @@ public class BluetoothManager{
         }
         if(!myBluetoothAdapter.isEnabled()){
             Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            aCA.startActivityForResult(enableBluetooth, REQUEST_ENABLE_BLUETOOTH);
+            Singleton.getInstance().aCAMainAct.startActivityForResult(enableBluetooth, REQUEST_ENABLE_BLUETOOTH);
         }
         MY_UUID = UUID.fromString(uuid);
-        SEARCH_NAME = name;
 
-        activity.registerReceiver(bReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
-        activity.registerReceiver(bReceiver, new IntentFilter(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED));
         return true;
     }
 
 
+    /**
+     * Close the BT
+     * @param activity
+     */
     public void closeBluetooth(Activity activity){
         if(mBtSocket != null){
             try{
@@ -103,294 +104,37 @@ public class BluetoothManager{
             mBtSocket = null;
         }
 
-        activity.unregisterReceiver(bReceiver);
+        activity.unregisterReceiver(myReceiver);
     }
 
+    /**
+     * Turn on the Bluetooth
+     * @param activity The activity
+     * @return REQUEST_ENABLE_BT if BT is not enable else 0
+     */
     public int turnOnBluetooth(Activity activity){
         if (!myBluetoothAdapter.isEnabled()) {
             Intent turnOnIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            activity.startActivityForResult(turnOnIntent, REQUEST_ENABLE_BT);
-            return REQUEST_ENABLE_BT;
+            activity.startActivityForResult(turnOnIntent, REQUEST_ENABLE_BLUETOOTH);
+            return REQUEST_ENABLE_BLUETOOTH;
         }
-
         return 0;
 
     }
 
+    /**
+     * Turn off the Bluetooth
+     */
     public void turnOffBluetooth(){
         myBluetoothAdapter.disable();
     }
 
+    /**
+     * Get the state of the Bluetooth
+     * @return true if activate otherwise false
+     */
     public boolean isBluetoothOn(){
         return myBluetoothAdapter.isEnabled();
-    }
-
-    public void makeBluetoothDiscoverable(Activity activity, int time, BluetoothCallback bluetoothCallback){
-        Intent turnVisibleIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        turnVisibleIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, time);
-        activity.startActivityForResult(turnVisibleIntent, REQUEST_VISIBLE_BT);
-        callback = bluetoothCallback;
-    }
-
-    public void startDiscover(BluetoothCallback bluetoothCallback){
-        callback = bluetoothCallback;
-        if(myBluetoothAdapter.isDiscovering())
-            return;
-        myBluetoothAdapter.startDiscovery();
-        Log.d("BT","startDiscovery");
-    }
-    BluetoothCallback callback;
-    void startListening(BluetoothCallback bluetoothCallback){
-        callback = bluetoothCallback;
-        AcceptTask task = new AcceptTask();
-        task.execute(MY_UUID);
-    }
-
-    //AsyncTask to accept incoming connections
-    private class AcceptTask extends AsyncTask<UUID, Void, BluetoothSocket> {
-
-        @Override
-        protected BluetoothSocket doInBackground(UUID... params) {
-            String name = myBluetoothAdapter.getName();
-            try {
-                //While listening, set the discovery name to a specific value
-                myBluetoothAdapter.setName(SEARCH_NAME);
-                BluetoothServerSocket socket = myBluetoothAdapter
-                        .listenUsingRfcommWithServiceRecord("Server", params[0]);
-                BluetoothSocket connected = socket.accept();
-                //Reset the BT adapter name
-                myBluetoothAdapter.setName(name);
-                return connected;
-            } catch (IOException e) {
-                e.printStackTrace();
-
-
-                return null;
-            }
-
-
-        }
-        @Override
-        protected void onPostExecute(BluetoothSocket socket) {
-            if(socket == null) {
-                if(callback != null){
-                    callback.onBluetoothConnection(BLUETOOTH_CONNECTED_ERROR);
-                }
-                return;
-            }
-
-            if(callback != null){
-                callback.onBluetoothConnection(BLUETOOTH_CONNECTED);
-            }
-
-            mBtSocket = socket;
-
-        }
-
-    }
-
-
-
-    public static final int BLUETOOTH_ON = 1000;
-    public static final int BLUETOOTH_OFF = -1000;
-
-    public static final int BLUETOOTH_DISCOVERY_LISTEN = 1001;
-    public static final int BLUETOOTH_DISCOVERY_CANCELED = -1001;
-
-    public static final int BLUETOOTH_CONNECTED = 1002;
-    public static final int BLUETOOTH_CONNECTED_ERROR = -1002;
-
-    public static final int BLUETOOTH_DISCOVERABLE = 1003;
-    public static final int BLUETOOTH_CONNECTABLE = 1004;
-    public static final int BLUETOOTH_NOT_CONNECTABLE = 1004;
-
-    public int CheckActivityResult(int requestCode, int resultCode){
-        Log.d("BT","CheckActivityResult"+requestCode);
-        if(requestCode == REQUEST_ENABLE_BT) {
-            if (myBluetoothAdapter.isEnabled()) {
-                return BLUETOOTH_ON;
-            } else {
-                return BLUETOOTH_OFF;
-            }
-        }
-        if(requestCode == REQUEST_VISIBLE_BT){
-            if(resultCode == Activity.RESULT_CANCELED){
-
-                return BLUETOOTH_DISCOVERY_CANCELED;
-            }else{
-
-                startListening(callback);
-                return BLUETOOTH_DISCOVERY_LISTEN;
-            }
-        }
-
-        return 0;
-    }
-
-    final BroadcastReceiver bReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-
-            // When discovery finds a device
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                Log.d("BT","ACTION_FOUND");
-
-                // Get the BluetoothDevice object from the Intent
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                // add the name and the MAC address of the object to the arrayAdapter
-                if(TextUtils.equals(device.getName(), SEARCH_NAME)) {
-                    //Matching device found, connect
-                    myBluetoothAdapter.cancelDiscovery();
-                    try {
-                        mBtSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
-                        mBtSocket.connect();
-
-                        if(callback != null){
-                            callback.onBluetoothConnection(BLUETOOTH_CONNECTED);
-                        }
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        if(callback != null){
-                            callback.onBluetoothConnection(BLUETOOTH_CONNECTED_ERROR);
-                        }
-
-                    }
-                }
-            }else if(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED.equals(action)) {
-                Log.d("BT","ACTION_SCAN_MODE_CHANGED");
-
-                int mode = intent.getIntExtra(BluetoothAdapter.EXTRA_SCAN_MODE,
-                        BluetoothAdapter.ERROR);
-
-
-                switch(mode){
-                    case BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE:
-                        if(callback != null){
-                            callback.onBluetoothDiscovery(BLUETOOTH_DISCOVERABLE);
-                        }
-                        break;
-                    case BluetoothAdapter.SCAN_MODE_CONNECTABLE:
-                        if(callback != null){
-                            callback.onBluetoothDiscovery(BLUETOOTH_CONNECTABLE);
-                        }
-                        break;
-                    case BluetoothAdapter.SCAN_MODE_NONE:
-                        if(callback != null){
-                            callback.onBluetoothDiscovery(BLUETOOTH_NOT_CONNECTABLE);
-                        }
-                        break;
-                }
-
-
-            }
-
-
-
-        }
-    };
-
-    public void sendData(BluetoothCallback bluetoothCallback, String data){
-        callback = bluetoothCallback;
-        SendDataTask task = new SendDataTask();
-        task.execute(data);
-    }
-    ReadThread readThread;
-    public void startReadingData(BluetoothCallback bluetoothCallback){
-        callback = bluetoothCallback;
-        readThread = new ReadThread(mBtSocket,callback);
-        readThread.start();
-    }
-
-    public void stopReadingData(){
-        if(readThread != null){
-            readThread.interrupt();
-            readThread = null;
-        }
-
-    }
-
-
-    //AsyncTask to receive a single line of data and post
-    private class SendDataTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... params) {
-            InputStream in = null;
-            OutputStream out = null;
-            try {
-                //Send your data
-                out = mBtSocket.getOutputStream();
-                out.write(params[0].getBytes());
-                //Receive the other's data
-
-
-                in = mBtSocket.getInputStream();
-                //byte[] buffer = new byte[1024];
-                //in.read(buffer);
-                //Create a clean string from results
-                //String result = new String(buffer);
-                //Close the connection
-                //mBtSocket.close();
-                return "SENDED";
-            } catch (Exception exc) {
-
-                return exc.getMessage();
-            }
-        }
-
-
-
-        @Override
-        protected void onPostExecute(String result) {
-            if(callback != null)
-                callback.onReceiveData(result);
-        }
-
-    }
-
-    private class ReadThread extends Thread {
-        BluetoothCallback callback;
-        private BluetoothSocket mmSocket;
-        private InputStream mmInStream;
-
-        public ReadThread(BluetoothSocket socket, BluetoothCallback bluetoothCallback) {
-            mmSocket = socket;
-            callback = bluetoothCallback;
-            InputStream tmpIn = null;
-
-            // Get the BluetoothSocket input and output streams
-            try {
-                tmpIn = socket.getInputStream();
-
-            } catch (IOException e) {
-                Log.e("IOException", "temp sockets not created", e);
-            }
-
-            mmInStream = tmpIn;
-        }
-
-        public void run() {
-
-            byte[] buffer = new byte[1024];
-            int bytes;
-            // Keep listening to the InputStream while connected
-            while (true) {
-                try {
-                    // Read from the InputStream
-                    bytes = mmInStream.read(buffer);
-                    String result = new String(buffer);
-                    Log.d("DATA_RECEIVED",result.trim());
-                    callback.onReceiveData(result.trim());
-
-                } catch (IOException e) {
-                    Log.e("IOException", "disconnected", e);
-                    callback.onBluetoothConnection(BLUETOOTH_CONNECTED_ERROR);
-                    break;
-                }
-            }
-        }
-
     }
 
 
@@ -414,7 +158,8 @@ public class BluetoothManager{
     public void bluetoothListDevices(){
         Set<BluetoothDevice> periphAppaires = myBluetoothAdapter.getBondedDevices();
         Singleton.getInstance().devices = new ArrayList<BluetoothDevice>();
-        for(BluetoothDevice bD : periphAppaires){
+        for(BluetoothDevice bD : periphAppaires)
+        {
             Singleton.getInstance().devices.add(bD);
         }
     }
@@ -439,22 +184,16 @@ public class BluetoothManager{
             if (BluetoothDevice.ACTION_FOUND.equals(action)){
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 Singleton.getInstance().devices.add(device);
-               /* if(device.getName() == null) {
-                    Singleton.getInstance().list.add(device.getAddress());
-                }else {
-                    Singleton.getInstance().list.add(device.getName());
-                }*/
+
                 Singleton.getInstance().adapter.notifyDataSetChanged();
             }
         }
     };
 
 
-
-
-
-
-
+    /**
+     * Handle the connection
+     */
     Handler handler = new Handler(new Handler.Callback(){
         @Override
         public boolean handleMessage(Message msg){
@@ -474,7 +213,9 @@ public class BluetoothManager{
                case STATE_MESSAGE_RECEIVED:
                     byte[] readBuff = (byte[]) msg.obj;
                     String tmpMsg = new String(readBuff, 0, msg.arg1);
-                    //Message à afficher
+                    if (tmpMsg.equals("x")){
+                        dangerAlert();
+                    }
                    break;
            }
            return true;
@@ -482,13 +223,19 @@ public class BluetoothManager{
     });
 
 
-
+    /**
+     * Connection to a BT device
+     * @param device the device
+     */
     public void connect(BluetoothDevice device){
         ClientClass clientClass = new ClientClass(device);
         clientClass.start();
     }
 
 
+    /**
+     * Handle the connection
+     */
     private class ClientClass extends Thread {
         private BluetoothDevice device;
         private BluetoothSocket socket;
@@ -525,6 +272,10 @@ public class BluetoothManager{
     }
 
 
+    /**
+     * Send a message
+     * @param msg the message
+     */
     public void senReceiveMsg(String msg){
         sendReiceve.write(msg.getBytes());
     }
@@ -568,24 +319,9 @@ public class BluetoothManager{
         }
     }
 
-
-    /**
-     * Alert when there is an obstacle
-     * !!!! Doesn't work, app close !!!!
-     */
-    public void receiveAlert(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(Singleton.getInstance().aCAMainAct.getApplicationContext());
-        builder.setTitle("Info");
-        builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-        builder.setMessage("There is a danger from of you !!");
-        AlertDialog aD = builder.create();
-        aD.show();
-        //Snackbar.make(Singleton.getInstance().aCAMainAct.findViewById(R.id.myCoordinatorLayout), "There is a danger from of you !!", Snackbar.LENGTH_SHORT).show();
+    private void dangerAlert(){
+        (new Connectivity()).execute("benphototravel.000webhostapp.com/notif.php?send&token="+Singleton.getInstance().token);
+        Log.i("Danger", "dangerAlert: "+Singleton.getInstance().token);
     }
 }
 

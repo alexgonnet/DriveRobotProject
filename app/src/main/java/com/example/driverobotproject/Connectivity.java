@@ -10,14 +10,23 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 
+/**
+ * Connectivity class : handle wifi connection
+ * @author  Benjamin BOURG
+ * @version 1
+ */
 
-public class Connectivity extends AsyncTask<Data, Void, String> {
-    public static String idProject = "30";
+
+public class Connectivity extends AsyncTask<String, Void, String> {
+
+    /**
+     * The web url
+     */
     String surl;
 
     @Override
-    protected String doInBackground(Data... params) {
-        surl = "http://cabani.free.fr/ise/adddata.php?idproject="+idProject+"&lux="+params[0].luminosity+"&timestamp="+(params[0].timestamp.getTime()/1000)+"&action="+params[0].action;
+    protected String doInBackground(String... params) {
+        surl = params[0];
         String response = "";
 
         try{

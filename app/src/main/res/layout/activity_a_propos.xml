@@ -33,7 +33,7 @@
         app:layout_constraintEnd_toStartOf="@+id/imageViewAG"
         app:layout_constraintHorizontal_bias="0.762"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/donald"
+        app:srcCompat="@drawable/ben"
         tools:visibility="visible" />
 
     <ImageView
@@ -48,7 +48,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
-        app:srcCompat="@drawable/goofy"
+        app:srcCompat="@drawable/alex"
         tools:visibility="visible" />
 
     <TextView

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "910200037482",
+    "firebase_url": "https://drive-robot-project.firebaseio.com",
+    "project_id": "drive-robot-project",
+    "storage_bucket": "drive-robot-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:910200037482:android:bbf05e7c81490a91acaa13",
+        "android_client_info": {
+          "package_name": "com.example.driverobotproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "910200037482-7v4pash74d4994ed859j69pcllpgnf77.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFI6uXTWohuYWIdOG5Yp6fS8xvA-QYbIE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "910200037482-7v4pash74d4994ed859j69pcllpgnf77.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

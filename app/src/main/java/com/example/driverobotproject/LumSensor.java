@@ -15,16 +15,44 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * Class LumSensor : Manage the luminosity
+ * @author Benjamin BOURG
+ * @version  1.1
+ */
+
 public class LumSensor extends Parametres implements SensorEventListener {
 
+    /**
+     * Store the permission value
+     * Initialize with false = no permission
+     */
     public boolean success = false;
 
+    /**
+     * The main activity activity
+     */
     private AppCompatActivity aCA;
 
+    /**
+     * Store the value true if the device has a luminosity sensor otherwise false
+     */
     private boolean sensorExist;
+
+    /**
+     * Luminosity sensor
+     */
     private Sensor photometre;
+
+    /**
+     * The value measured by the sensor
+     */
     private int valueSensor;
 
+
+    /**
+     * Check if the device has a luminosity sensor
+     */
     public void isLumSensorAvalaible(){
         getPermission();
 
@@ -39,11 +67,20 @@ public class LumSensor extends Parametres implements SensorEventListener {
         }
     }
 
+    /**
+     * Return the existance or not of the luminosity sensor
+     * @param aCA the activity from an other activity
+     * @return sensorExist if the device has a luminosity sensor, return true otherwise false
+     */
     public boolean initLumSensor(AppCompatActivity aCA){
         this.aCA = aCA;
         return sensorExist;
     }
 
+    /**
+     * Set the brightness of the device
+     * @param brightness The new brightness value
+     */
     public void setBrightness(int brightness){
         if(brightness < 0){
             brightness = 0;
@@ -56,6 +93,10 @@ public class LumSensor extends Parametres implements SensorEventListener {
     }
 
 
+    /**
+     * Get the brightness of the device
+     * @return brightness the device brightness
+     */
     public int getBrightness(){
         int brightness = 100;
         try {
@@ -67,6 +108,10 @@ public class LumSensor extends Parametres implements SensorEventListener {
         return brightness;
     }
 
+    /**
+     * Get the luminosity sensor value
+     * @return valueSensor the luminosity measured | 0 if there is no sensor
+     */
     public int getSensorValue(){
         if (sensorExist){
             return valueSensor;
@@ -75,6 +120,9 @@ public class LumSensor extends Parametres implements SensorEventListener {
     }
 
 
+    /**
+     * Ask the permission to modified luminosity settings
+     */
     public void getPermission(){
         boolean value;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
@@ -90,6 +138,12 @@ public class LumSensor extends Parametres implements SensorEventListener {
     }
 
 
+    /**
+     * Get the permission result
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(requestCode == 1000){
@@ -104,6 +158,10 @@ public class LumSensor extends Parametres implements SensorEventListener {
         }
     }
 
+    /**
+     * Activate/Disactivate automatic device luminosity
+     * @param state true if activate | false if disactivate
+     */
     public void enableAutoLum(boolean state){
         if (state){
             ContentResolver contentResolver = aCA.getApplicationContext().getContentResolver();
@@ -114,6 +172,10 @@ public class LumSensor extends Parametres implements SensorEventListener {
         }
     }
 
+    /**
+     * Get from the sensor the luminosity
+     * @param event
+     */
     @Override
     public void onSensorChanged(SensorEvent event) {
         valueSensor = (int)event.values[0];

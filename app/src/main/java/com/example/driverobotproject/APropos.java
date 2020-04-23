@@ -1,7 +1,7 @@
 package com.example.driverobotproject;
 
 /**
- * Manage the "A propos" menu
+ * Manage the "About" menu
  * @author Alex GONNET
  * @version 1
  */
