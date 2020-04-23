@@ -39,7 +39,7 @@ public class FirebaseMessageService extends FirebaseMessagingService {
         Log.i("Debug", "Message received");
         //handle when receive notification via data event
         if (remoteMessage.getData().size() >0) {
-            this.sendVisualNotification(remoteMessage.getData().get("title"), remoteMessage.getData().get("message"));
+            this.sendVisualNotification(remoteMessage.getData().get("title"), remoteMessage.getData().get("body"));
         }
 
         //handle when receive notification

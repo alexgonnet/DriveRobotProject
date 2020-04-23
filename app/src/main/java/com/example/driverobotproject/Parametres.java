@@ -96,8 +96,8 @@ public class Parametres extends AppCompatActivity implements EventListener  {
         }
 
         //Initialization of the seekbar
-        seekBar.setMax(255);
-        seekBar.setProgress(Singleton.getInstance().lumSensor.getBrightness());
+        seekBar.setMax(255); //Max value
+        seekBar.setProgress(Singleton.getInstance().lumSensor.getBrightness()); //Set the position to the current value of the screen luminosity
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener(){
 
             @Override

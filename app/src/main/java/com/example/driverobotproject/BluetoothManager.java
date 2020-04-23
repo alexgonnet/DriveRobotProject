@@ -75,10 +75,12 @@ public class BluetoothManager{
      public boolean initializeBluetooth(String uuid){
         Log.e("BluetoothAdapter","initializeBluetooth");
         myBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        //If the device donesn't have BT
         if(myBluetoothAdapter == null) {
             Log.e("BluetoothAdapter","myBluetoothAdapter == null");
             return false;
         }
+        //If the BT is nor enable, the app asks for the BT
         if(!myBluetoothAdapter.isEnabled()){
             Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             Singleton.getInstance().aCAMainAct.startActivityForResult(enableBluetooth, REQUEST_ENABLE_BLUETOOTH);
@@ -113,6 +115,7 @@ public class BluetoothManager{
      * @return REQUEST_ENABLE_BT if BT is not enable else 0
      */
     public int turnOnBluetooth(Activity activity){
+        //If the BT is not active, the app asks the permission to activate it
         if (!myBluetoothAdapter.isEnabled()) {
             Intent turnOnIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             activity.startActivityForResult(turnOnIntent, REQUEST_ENABLE_BLUETOOTH);
@@ -126,7 +129,7 @@ public class BluetoothManager{
      * Turn off the Bluetooth
      */
     public void turnOffBluetooth(){
-        myBluetoothAdapter.disable();
+        myBluetoothAdapter.disable(); //Turn off BT
     }
 
     /**
@@ -157,10 +160,10 @@ public class BluetoothManager{
      */
     public void bluetoothListDevices(){
         Set<BluetoothDevice> periphAppaires = myBluetoothAdapter.getBondedDevices();
-        Singleton.getInstance().devices = new ArrayList<BluetoothDevice>();
+        Singleton.getInstance().devices = new ArrayList<BluetoothDevice>(); //initialize the devices list
         for(BluetoothDevice bD : periphAppaires)
         {
-            Singleton.getInstance().devices.add(bD);
+            Singleton.getInstance().devices.add(bD); //Add the device to the list of devices
         }
     }
 
@@ -171,7 +174,7 @@ public class BluetoothManager{
     public void bluetoothSearchDevices(){
         IntentFilter intentFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         Singleton.getInstance().aCA.registerReceiver(myReceiver, intentFilter);
-        myBluetoothAdapter.startDiscovery();
+        myBluetoothAdapter.startDiscovery(); //Start the discovery of unpaired devices
     }
 
     /**
@@ -183,9 +186,9 @@ public class BluetoothManager{
             String action = intent.getAction();
             if (BluetoothDevice.ACTION_FOUND.equals(action)){
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                Singleton.getInstance().devices.add(device);
+                Singleton.getInstance().devices.add(device); //Add the device to the list
 
-                Singleton.getInstance().adapter.notifyDataSetChanged();
+                Singleton.getInstance().adapter.notifyDataSetChanged(); //Refresh the listview
             }
         }
     };
@@ -213,8 +216,9 @@ public class BluetoothManager{
                case STATE_MESSAGE_RECEIVED:
                     byte[] readBuff = (byte[]) msg.obj;
                     String tmpMsg = new String(readBuff, 0, msg.arg1);
+                    //In case of danger, the robot send "x"
                     if (tmpMsg.equals("x")){
-                        dangerAlert();
+                        dangerAlert(); //Call the method for the notification
                     }
                    break;
            }
@@ -229,7 +233,7 @@ public class BluetoothManager{
      */
     public void connect(BluetoothDevice device){
         ClientClass clientClass = new ClientClass(device);
-        clientClass.start();
+        clientClass.start(); //Start the connection to the device device
     }
 
 
@@ -258,7 +262,7 @@ public class BluetoothManager{
             try {
                 Message message = Message.obtain();
                 message.what = STATE_CONNECTED;
-                handler.sendMessage(message);
+                handler.sendMessage(message); //Send a message to the device
 
                 sendReceive = new SendReceive(socket);
                 sendReceive.start();
@@ -312,7 +316,7 @@ public class BluetoothManager{
 
         public void write(byte[] bytes){
             try {
-                outputStream.write(bytes);
+                outputStream.write(bytes); //Write the data to the output buffer
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -323,6 +327,7 @@ public class BluetoothManager{
      * Send a message to the firebase to get a notification
      */
     private void dangerAlert(){
+        //Connection to the php file to send a notification to the device throw FCM
         (new Connectivity()).execute("https://benphototravel.000webhostapp.com/notif.php?send&token="+Singleton.getInstance().token);
         Log.i("Danger", "dangerAlert: "+Singleton.getInstance().token);
     }

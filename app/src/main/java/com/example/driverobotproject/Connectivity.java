@@ -28,20 +28,19 @@ public class Connectivity extends AsyncTask<String, Void, String> {
     protected String doInBackground(String... params) {
         surl = params[0];
         String response = "";
+        HttpURLConnection connection = null;
 
         try{
             URL url = new URL(surl);
-            HttpURLConnection connection = (HttpURLConnection)
-                    url.openConnection();
+            connection = (HttpURLConnection) url.openConnection(); //Create the connection to the website
             connection.setConnectTimeout(3000);
             connection.setReadTimeout(3000);
             connection.setRequestMethod("GET");
             Log.d("Web","connect2");
-            connection.connect();
-            int code = connection.getResponseCode();
-            Log.d("Web","code:"+code);
-            if(code
-                    == HttpURLConnection.HTTP_OK){
+            connection.connect(); //Connection to the website
+            int code = connection.getResponseCode(); //Result code
+            Log.d("Web","code:"+code); //if code = 200 success
+            if(code == HttpURLConnection.HTTP_OK){
                 InputStream inputStream = connection.getInputStream();
                 InputStreamReader isReader = new InputStreamReader(inputStream);
                 BufferedReader reader = new BufferedReader(isReader);
@@ -56,11 +55,13 @@ public class Connectivity extends AsyncTask<String, Void, String> {
             }else{
                 Log.d("Web","code no good");
             }
-            connection.disconnect();
         }catch (Exception e){
             response = e.getMessage();
             Log.d("Web","error:"+e.toString());
             e.printStackTrace();
+        }finally {
+            //Close the connection
+            connection.disconnect();
         }
         Log.d("Web","disconnect");
         return response;
