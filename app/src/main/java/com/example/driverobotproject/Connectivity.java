@@ -26,7 +26,7 @@ public class Connectivity extends AsyncTask<String, Void, String> {
 
     @Override
     protected String doInBackground(String... params) {
-        surl = params[0];
+        surl = params[0]; //The url in string to connect to
         String response = "";
         HttpURLConnection connection = null;
 
@@ -46,6 +46,7 @@ public class Connectivity extends AsyncTask<String, Void, String> {
                 BufferedReader reader = new BufferedReader(isReader);
                 StringBuffer sb = new StringBuffer();
                 String str;
+                //Get the response to the HTTP request
                 while((str = reader.readLine())!= null){
                     sb.append(str);
                 }

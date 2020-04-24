@@ -131,10 +131,13 @@ public class LumSensor extends Parametres implements SensorEventListener {
     public void getPermission(){
         boolean value;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+            //Enable the permission to write into the device settings
             value = Settings.System.canWrite(Singleton.getInstance().aCAMainAct.getApplicationContext());
             if(value){
+                //The permission is activated
                 success = true;
             } else {
+                //Ask the user the permission to write into the settings
                 Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS);
                 intent.setData((Uri.parse("package:" + Singleton.getInstance().aCAMainAct.getApplicationContext().getPackageName())));
                 Singleton.getInstance().aCAMainAct.startActivityForResult(intent, 10000);

@@ -250,6 +250,10 @@ public class BluetoothManager{
         private BluetoothDevice device;
         private BluetoothSocket socket;
 
+        /**
+         * Constructor
+         * @param device the device to connect
+         */
         public ClientClass (BluetoothDevice device){
             this.device = device;
             myBluetoothAdapter.cancelDiscovery();
@@ -293,11 +297,19 @@ public class BluetoothManager{
         sendReceive.write(msg.getBytes());
     }
 
+    /**
+     * Class to send or receive a message throw BT
+     */
     private class SendReceive extends Thread {
         private final BluetoothSocket bluetoothSocket;
         private final InputStream inputStream;
         private final OutputStream outputStream;
 
+        /**
+         * Constructor
+         * @param socket the socket to handle the connection
+         * @throws IOException
+         */
         public SendReceive (BluetoothSocket socket) throws IOException {
             bluetoothSocket = socket;
             InputStream tmpIn = null;
@@ -309,6 +321,9 @@ public class BluetoothManager{
             outputStream = tmpOut;
         }
 
+        /**
+         * Class runs when the app receives a message
+         */
         public void run(){
             byte[] buffer = new byte[1024];
             int bytes;
@@ -323,6 +338,10 @@ public class BluetoothManager{
             }
         }
 
+        /**
+         * Class used to send a message
+         * @param bytes the message in byte
+         */
         public void write(byte[] bytes){
             try {
                 outputStream.write(bytes); //Write the data to the output buffer

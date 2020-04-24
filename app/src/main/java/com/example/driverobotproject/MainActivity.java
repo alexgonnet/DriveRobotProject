@@ -235,6 +235,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
      * Method call to request WIFI
      */
     private void requestWifi(){
+        //Display to the user an alert dialog to ask the user to activate the wifi
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Info");
         builder.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
