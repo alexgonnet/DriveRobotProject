@@ -75,12 +75,12 @@ public class BluetoothManager{
      public boolean initializeBluetooth(String uuid){
         Log.e("BluetoothAdapter","initializeBluetooth");
         myBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        //If the device donesn't have BT
+        //If the device doesn't have BT
         if(myBluetoothAdapter == null) {
             Log.e("BluetoothAdapter","myBluetoothAdapter == null");
             return false;
         }
-        //If the BT is nor enable, the app asks for the BT
+        //If the BT is not enable, the app asks for the BT
         if(!myBluetoothAdapter.isEnabled()){
             Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             Singleton.getInstance().aCAMainAct.startActivityForResult(enableBluetooth, REQUEST_ENABLE_BLUETOOTH);
@@ -93,7 +93,7 @@ public class BluetoothManager{
 
     /**
      * Close the BT
-     * @param activity
+     * @param activity The activity
      */
     public void closeBluetooth(Activity activity){
         if(mBtSocket != null){
@@ -160,10 +160,12 @@ public class BluetoothManager{
      */
     public void bluetoothListDevices(){
         Set<BluetoothDevice> periphAppaires = myBluetoothAdapter.getBondedDevices();
-        Singleton.getInstance().devices = new ArrayList<BluetoothDevice>(); //initialize the devices list
+        //Initialize the devices list
+        Singleton.getInstance().devices = new ArrayList<BluetoothDevice>();
         for(BluetoothDevice bD : periphAppaires)
         {
-            Singleton.getInstance().devices.add(bD); //Add the device to the list of devices
+            //Add the device to the list
+            Singleton.getInstance().devices.add(bD);
         }
     }
 
@@ -174,7 +176,8 @@ public class BluetoothManager{
     public void bluetoothSearchDevices(){
         IntentFilter intentFilter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         Singleton.getInstance().aCA.registerReceiver(myReceiver, intentFilter);
-        myBluetoothAdapter.startDiscovery(); //Start the discovery of unpaired devices
+        //Start the discovery of unpaired devices
+        myBluetoothAdapter.startDiscovery();
     }
 
     /**
@@ -186,9 +189,11 @@ public class BluetoothManager{
             String action = intent.getAction();
             if (BluetoothDevice.ACTION_FOUND.equals(action)){
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                Singleton.getInstance().devices.add(device); //Add the device to the list
+                //Add the device to the list
+                Singleton.getInstance().devices.add(device);
 
-                Singleton.getInstance().adapter.notifyDataSetChanged(); //Refresh the listview
+                //Refresh the ListView
+                Singleton.getInstance().adapter.notifyDataSetChanged();
             }
         }
     };
@@ -233,7 +238,8 @@ public class BluetoothManager{
      */
     public void connect(BluetoothDevice device){
         ClientClass clientClass = new ClientClass(device);
-        clientClass.start(); //Start the connection to the device device
+        //Start the connection to the device
+        clientClass.start();
     }
 
 
@@ -251,10 +257,12 @@ public class BluetoothManager{
                 socket = device.createRfcommSocketToServiceRecord(MY_UUID);
                 socket.connect();
                 connected = true;
-                Toast.makeText(Singleton.getInstance().aCA.getApplicationContext(), "Connection successful",Toast.LENGTH_SHORT).show();
+                Toast.makeText(Singleton.getInstance().aCA.getApplicationContext(),
+                        "Connection successful",Toast.LENGTH_SHORT).show();
             } catch (IOException e) {
                 e.printStackTrace();
-                Toast.makeText(Singleton.getInstance().aCA.getApplicationContext(), "Connection failed",Toast.LENGTH_SHORT).show();
+                Toast.makeText(Singleton.getInstance().aCA.getApplicationContext(),
+                        "Connection failed",Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -262,7 +270,8 @@ public class BluetoothManager{
             try {
                 Message message = Message.obtain();
                 message.what = STATE_CONNECTED;
-                handler.sendMessage(message); //Send a message to the device
+                //Send a message to the device
+                handler.sendMessage(message);
 
                 sendReceive = new SendReceive(socket);
                 sendReceive.start();

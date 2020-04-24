@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
      */
     public void onButtonAProposClicked(View v) {
         Log.i("Bouton", "A propos");
+        //Start "APropos" activity
         Intent intent = new Intent(
                 MainActivity.this,
                 APropos.class
@@ -79,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
      */
     public void onButtonParametresClicked(View v) {
         Log.i("Bouton", "Parametres");
+        //Start "Parametres" activity
         Intent intent = new Intent(
                 MainActivity.this,
                 Parametres.class
@@ -168,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
     }
 
     /**
-     * Call when the app receives a message via Bluetooth
+     * Called when the app receives a message via Bluetooth
      * @param data the received String
      */
     @Override
@@ -223,7 +225,10 @@ public class MainActivity extends AppCompatActivity implements BluetoothCallback
      */
     private void sendData(String action){
         this.timestamp = new Timestamp(System.currentTimeMillis());
-        (new Connectivity()).execute("http://cabani.free.fr/ise/adddata.php?idproject="+idProject+"&lux="+Singleton.getInstance().lumSensor.getSensorValue()+"&timestamp="+(timestamp.getTime()/1000)+"&action="+action);
+        (new Connectivity()).execute("http://cabani.free.fr/ise/adddata.php?idproject="+idProject
+                +"&lux="+Singleton.getInstance().lumSensor.getSensorValue()
+                +"&timestamp="+(timestamp.getTime()/1000)
+                +"&action="+action);
     }
 
     /**

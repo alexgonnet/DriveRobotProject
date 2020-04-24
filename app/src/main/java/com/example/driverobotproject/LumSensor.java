@@ -57,10 +57,13 @@ public class LumSensor extends Parametres implements SensorEventListener {
         getPermission();
 
         SensorManager sm = (SensorManager)Singleton.getInstance().aCAMainAct.getSystemService(Context.SENSOR_SERVICE);
-        photometre = sm.getDefaultSensor(Sensor.TYPE_LIGHT); //Get the luminosity sensor
+        //Get the luminosity sensor
+        photometre = sm.getDefaultSensor(Sensor.TYPE_LIGHT);
+
         //Sensor exist
         if(photometre != null){
-            sm.registerListener(this, photometre, sm.SENSOR_DELAY_NORMAL); //Set the measure frequency
+            //Set the measure frequency
+            sm.registerListener(this, photometre, sm.SENSOR_DELAY_NORMAL);
             sensorExist = true;
         }else {
             sensorExist = false;
@@ -89,7 +92,8 @@ public class LumSensor extends Parametres implements SensorEventListener {
         }
 
         ContentResolver contentResolver = aCA.getApplicationContext().getContentResolver();
-        Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS, brightness); //Set the brightness in the settings
+        //Set the brightness in the settings
+        Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS, brightness);
     }
 
 
@@ -101,7 +105,8 @@ public class LumSensor extends Parametres implements SensorEventListener {
         int brightness = 100;
         try {
             ContentResolver contentResolver = aCA.getApplicationContext().getContentResolver();
-            brightness = Settings.System.getInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS); //Get the screen brightness from the settings
+            //Get the screen brightness from the settings
+            brightness = Settings.System.getInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS);
         } catch (Settings.SettingNotFoundException e){
             e.printStackTrace();
         }
@@ -165,10 +170,12 @@ public class LumSensor extends Parametres implements SensorEventListener {
     public void enableAutoLum(boolean state){
         if (state){
             ContentResolver contentResolver = aCA.getApplicationContext().getContentResolver();
-            Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC); //Activate automatic luminosity mode
+            //Activate automatic luminosity mode
+            Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC);
         } else {
             ContentResolver contentResolver = aCA.getApplicationContext().getContentResolver();
-            Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL); //Activate manual luminosity mode
+            //Activate manual luminosity mode
+            Settings.System.putInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
         }
     }
 
